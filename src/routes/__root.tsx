@@ -87,19 +87,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Jeevana — Your Entire Life, Organized In One Conversation" },
       {
         property: "og:description",
-        content: "Ceritakan harimu, Jeevana akan mengurus sisanya.",
+        content:
+          "Jeevana is an AI Life Operating System. Capture activities, expenses, reminders, and habits through natural conversation.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://jeevana.app" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Jeevana — Your Entire Life, Organized In One Conversation" },
-      { name: "description", content: "Jeevana is an AI Life OS that organizes your life through natural conversations." },
-      { property: "og:description", content: "Jeevana is an AI Life OS that organizes your life through natural conversations." },
-      { name: "twitter:description", content: "Jeevana is an AI Life OS that organizes your life through natural conversations." },
+      {
+        name: "twitter:description",
+        content:
+          "Jeevana is an AI Life Operating System. Capture activities, expenses, reminders, and habits through natural conversation.",
+      },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4500a2ae-e099-45fb-8e11-7996c8034d37/id-preview-78d865e9--e8959980-3e42-4f21-9175-ac54180e66a3.lovable.app-1781779482759.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4500a2ae-e099-45fb-8e11-7996c8034d37/id-preview-78d865e9--e8959980-3e42-4f21-9175-ac54180e66a3.lovable.app-1781779482759.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: "https://jeevana.app" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
