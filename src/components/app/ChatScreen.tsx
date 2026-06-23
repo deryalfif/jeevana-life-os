@@ -32,7 +32,7 @@ function formatIDR(n: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
 }
 
-function ToolBadge({ name, result }: { name: string; result: any }) {
+function ToolBadge({ result }: { result: any }) {
   if (!result) {
     return (
       <div className="mt-2 inline-flex items-center gap-2 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
@@ -93,7 +93,7 @@ export function ChatScreen() {
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        headers: () => (token ? { Authorization: `Bearer ${token}` } : {}),
+        headers: () => (token ? { Authorization: `Bearer ${token}` } : ({} as Record<string, string>)),
       }),
     [token]
   );
@@ -168,9 +168,8 @@ export function ChatScreen() {
                       );
                     }
                     if (part.type.startsWith("tool-")) {
-                      const toolName = part.type.replace("tool-", "");
                       const output = (part as any).output;
-                      return <ToolBadge key={i} name={toolName} result={output} />;
+                      return <ToolBadge key={i} result={output} />;
                     }
                     return null;
                   })}

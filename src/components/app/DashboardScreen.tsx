@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
 import { fetchLifeLogs } from "@/lib/jeevana.functions";
-import { Activity, ShoppingBag, Bell, Sparkles, TrendingUp, MessageCircle } from "lucide-react";
+import { Activity, Bell, Sparkles, TrendingUp, MessageCircle } from "lucide-react";
 
 type Log = {
   id: string;
