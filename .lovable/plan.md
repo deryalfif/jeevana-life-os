@@ -1,31 +1,73 @@
-## Direction
-Going with the Swiss-GenZ Bento direction — light `#F8FAFC` canvas, bold Inter display type, gradient (blue→purple) accents, rounded-3xl bento tiles, glass nav, dark inverted "value props" island.
 
-## Sections (single-page, in order)
-1. Sticky blur navbar — Jeevana wordmark · Features / Use Cases / Roadmap / Pricing / FAQ · Start Free
-2. Hero — gradient headline "Your Entire Life, Organized In One Conversation.", subheadline, Start Free + Watch Demo. Split visual: chat panel (Indonesian input → ✓ Activity Logged / Distance / Duration) + dashboard mockup with 4 floating badges (Activity Saved, Expense Recorded, Reminder Created, Daily Summary Ready)
-3. Stats strip — 10,000+ · 95% · 30+ · 4.9/5
-4. Problem bento — "Your Life Is Scattered Across Too Many Apps." 5 disconnected tiles: Notes, Finance, Calendar, Tasks, Health
-5. Value props bento (dark island) — "One Conversation. One Organized Life." × 4: Natural Language First, Automatic Structuring, Life Data Hub, Smart Insights
-6. Features — 5 cards each showing Indonesian input → structured output chips (Daily Logging, Expense, Income, Reminder, Daily Summary)
-7. How it works — vertical timeline, 5 steps
-8. Dashboard preview — 3 tabs (Home / Finance / Activity) inside a browser-frame card with realistic charts, activity log, reminders, AI insights
-9. Built For — 6 persona tiles (Young Professionals, Students, Freelancers, Creators, Entrepreneurs, Remote Workers)
-10. Benefits — 6-item checklist ("What You Gain With Jeevana")
-11. Roadmap — 4 phases (MVP / Social Finance / Health / Integrations)
-12. Pricing — 3 tiers, PRO (Rp 10k/mo) highlighted dark with ring; Free + Premium (Rp 20k/mo) on white
-13. FAQ — 6 accordion items
-14. Final CTA — gradient card "Start Understanding Your Life Better." with AI assistant visual
-15. Footer — Jeevana · "Your Life. Organized." · menu · socials · © 2026
+# Jeevana MVP — AI Life OS
 
-## Technical
-- TanStack Start: single route at `src/routes/index.tsx` replacing placeholder. Sub-components in `src/components/landing/` (Nav, Hero, Stats, Problem, ValueProps, Features, HowItWorks, DashboardPreview, BuiltFor, Benefits, Roadmap, Pricing, FAQ, FinalCTA, Footer).
-- Design tokens in `src/styles.css` (@theme): `--color-primary #0F172A`, `--color-secondary #3B82F6`, `--color-accent #8B5CF6`, `--color-background #F8FAFC`, `--color-surface #FFFFFF`. Inter via Google Fonts `<link>` in `src/routes/__root.tsx` head.
-- SEO in `head()`: title, meta description, OG tags. Single H1 (hero).
-- Animation: framer-motion (already pulled if present, else add) for scroll-reveal fades + hover lift; subtle pulse on status dots. Keep restrained.
-- Dashboard + chat visuals built with pure HTML/Tailwind (no image placeholders) so it looks like the live product. AI assistant visual in final CTA is a generated PNG.
-- Accordion via shadcn `accordion` component for FAQ.
-- Fully responsive: bento collapses to single column on mobile; nav links hide < md.
+Landing page yang sudah ada tetap di `/`. App-nya hidup di route terproteksi.
 
-## Out of scope
-No auth, no backend, no real data — pure marketing page.
+## Scope iterasi ini
+- Auth email/password (Lovable Cloud)
+- AI Chat sebagai core (satu conversation per user, terus-menerus)
+- AI extraction pipeline → simpan ke `life_logs` otomatis
+- Life Feed (timeline kronologis)
+- Dashboard bento dasar (today summary, expense, activity, reminders)
+- Bahasa Indonesia, casual Gen-Z, style melanjutkan landing (Swiss + bento, putih bersih, biru #3B82F6 + ungu #8B5CF6, Inter)
+
+Tidak termasuk sekarang: Habits, Finance module lengkap, Reminders engine (notifikasi cuma list), Insights AI mingguan, Memory Center UI, Calendar, Admin panel, voice input, OAuth. Skema DB tetap disiapkan supaya gampang nyusul.
+
+## Routing
+```
+/                       landing (existing, public)
+/auth                   login + register (toggle)
+/_authenticated/
+  app                   redirect ke /chat
+  chat                  AI Chat (core)
+  feed                  Life Feed
+  dashboard             Bento dashboard
+  logs                  Life Logs (table sederhana)
+  settings              profile + sign out
+```
+App shell: sidebar kiri (Chat, Feed, Dashboard, Logs, Settings) + topbar minimal. Mobile: bottom nav.
+
+## Backend (Lovable Cloud)
+Tabel di skema `public`, semua dengan RLS `user_id = auth.uid()` + GRANT ke `authenticated`.
+
+- `profiles` — id (FK auth.users), display_name, created_at
+- `messages` — id, user_id, role ('user'|'assistant'), content, created_at, extracted_log_ids uuid[]
+- `life_logs` — id, user_id, type ('activity'|'expense'|'income'|'reminder'|'note'), category, title, amount numeric null, duration_minutes int null, occurred_at timestamptz, metadata jsonb, source_message_id, created_at
+- `reminders` — id, user_id, life_log_id, remind_at, status, created_at
+- `memories` — id, user_id, content, created_at (disiapkan, belum di-UI penuh)
+
+Trigger: auto-insert profile on signup.
+
+## AI pipeline
+Server function `sendChatMessage({ text })`:
+1. Insert user message
+2. Panggil Lovable AI Gateway (`google/gemini-3-flash-preview`) dengan AI SDK `generateText` + tool calling. Tools:
+   - `log_activity({ title, category, duration_minutes?, occurred_at })`
+   - `log_expense({ description, category, amount, occurred_at })`
+   - `log_income({ description, amount, occurred_at })`
+   - `create_reminder({ title, remind_at, notes? })`
+   - `save_note({ content })`
+   Setiap tool `execute` insert ke `life_logs` (+ `reminders` kalau perlu) untuk user yang sedang login.
+3. `stopWhen: stepCountIs(50)`. System prompt: balas singkat, ramah, bahasa Indonesia casual, konfirmasi apa yang dicatat.
+4. Return assistant message + daftar log baru.
+
+Streaming pakai route `src/routes/api/chat.ts` + `useChat` (DefaultChatTransport, id tetap = user id). Persist user + assistant message di `onFinish` server-side, tool results juga disimpan di message parts.
+
+## UI utama
+- **Chat**: AI Elements (`conversation`, `message`, `prompt-input`, `tool`, `shimmer`). Empty state dengan suggested prompts ("Hari ini jogging 5 km", "Beli kopi 25 ribu", "Ingatkan bayar listrik tgl 10"). Tool calls render sebagai kartu hijau kecil "✓ Dicatat: Beli kopi · Rp25.000".
+- **Life Feed**: query `life_logs` order by `occurred_at desc`, dikelompokin per hari ("Hari ini", "Kemarin", tanggal). Tiap item: icon per type, judul, meta (amount/duration), waktu.
+- **Dashboard**: bento grid — Today Summary (count log + total expense hari ini), Expense 7 hari (bar mini), Recent Activities, Upcoming Reminders, Quick log CTA ke chat.
+- **Logs**: tabel + filter type, edit inline (judul/amount), delete.
+- **Settings**: nama + sign out.
+
+Style: lanjut token landing (canvas #F8FAFC, ink #0F172A, brand #3B82F6, grape #8B5CF6, rounded-3xl, soft shadow, Inter). Sidebar putih dengan border halus. Dark mode skip dulu.
+
+## Technical notes
+- TanStack Start + `_authenticated` layout (integration-managed) untuk gating.
+- Install AI Elements: `bun x ai-elements@latest add conversation message prompt-input tool shimmer`.
+- Server functions di `src/lib/*.functions.ts`; route `/api/chat.ts` untuk streaming.
+- TanStack Query untuk feed/dashboard/logs (loader pakai `ensureQueryData`, komponen pakai `useSuspenseQuery`).
+- Setelah chat selesai streaming → `queryClient.invalidateQueries(['life_logs'])` supaya feed/dashboard refresh.
+
+## Out of scope (next iterations)
+Habits engine, full Finance dengan budget & chart, Reminder notification delivery, Insights mingguan AI, Memory Center editable, Calendar, Voice input, Onboarding wizard, Admin panel, Google OAuth, Life Score.
