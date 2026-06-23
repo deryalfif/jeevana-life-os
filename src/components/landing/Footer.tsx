@@ -1,8 +1,8 @@
-import { Instagram, Sparkles, Twitter } from "lucide-react";
+import { Send, Sparkles, AtSign } from "lucide-react";
 
 const SOCIAL_LINKS = [
-  { Icon: Twitter, label: "Follow us on Twitter", href: "#" },
-  { Icon: Instagram, label: "Follow us on Instagram", href: "#" },
+  { Icon: AtSign, label: "Follow us on Twitter", href: "#" },
+  { Icon: Send, label: "Follow us on Instagram", href: "#" },
 ];
 
 const PRODUCT_LINKS = ["Features", "Use Cases", "Pricing", "FAQ"];
