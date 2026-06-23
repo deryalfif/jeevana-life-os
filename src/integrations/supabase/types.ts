@@ -14,7 +14,160 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      life_logs: {
+        Row: {
+          amount: number | null
+          category: string | null
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          metadata: Json
+          occurred_at: string
+          source_message_id: string | null
+          title: string
+          type: Database["public"]["Enums"]["log_type"]
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          category?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          metadata?: Json
+          occurred_at?: string
+          source_message_id?: string | null
+          title: string
+          type: Database["public"]["Enums"]["log_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          category?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          metadata?: Json
+          occurred_at?: string
+          source_message_id?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["log_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "life_logs_source_message_id_fkey"
+            columns: ["source_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memories: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          parts: Json
+          role: Database["public"]["Enums"]["chat_role"]
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          parts?: Json
+          role: Database["public"]["Enums"]["chat_role"]
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: Database["public"]["Enums"]["chat_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          id: string
+          life_log_id: string | null
+          remind_at: string
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          life_log_id?: string | null
+          remind_at: string
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          life_log_id?: string | null
+          remind_at?: string
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminders_life_log_id_fkey"
+            columns: ["life_log_id"]
+            isOneToOne: false
+            referencedRelation: "life_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +176,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      chat_role: "user" | "assistant"
+      log_type: "activity" | "expense" | "income" | "reminder" | "note"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +304,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      chat_role: ["user", "assistant"],
+      log_type: ["activity", "expense", "income", "reminder", "note"],
+    },
   },
 } as const
