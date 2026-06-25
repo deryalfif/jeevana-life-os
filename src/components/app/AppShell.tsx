@@ -1,15 +1,38 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { MessageCircle, Newspaper, LayoutGrid, Database, Settings, Sparkles, LogOut } from "lucide-react";
+import {
+  MessageCircle,
+  Newspaper,
+  LayoutGrid,
+  Database,
+  Settings,
+  Sparkles,
+  LogOut,
+  Calendar,
+  Activity,
+  Flame,
+  Wallet,
+  Bell,
+  Brain,
+  TrendingUp,
+  ShieldAlert,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
 const nav = [
   { to: "/chat", label: "Chat", icon: MessageCircle },
-  { to: "/feed", label: "Life Feed", icon: Newspaper },
   { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-  { to: "/logs", label: "Life Logs", icon: Database },
-  { to: "/settings", label: "Pengaturan", icon: Settings },
+  { to: "/calendar", label: "Kalender", icon: Calendar },
+  { to: "/activities", label: "Aktivitas", icon: Activity },
+  { to: "/habits", label: "Habits", icon: Flame },
+  { to: "/finance", label: "Keuangan", icon: Wallet },
+  { to: "/reminders", label: "Pengingat", icon: Bell },
+  { to: "/memories", label: "Memories", icon: Brain },
+  { to: "/insights", label: "Insights", icon: TrendingUp },
+  { to: "/feed", label: "Life Feed", icon: Newspaper },
+  { to: "/logs", label: "Data Mentah", icon: Database },
+  { to: "/admin", label: "Admin Panel", icon: ShieldAlert },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {

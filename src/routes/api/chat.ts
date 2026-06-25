@@ -9,7 +9,7 @@ import {
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { createAIProvider } from "@/lib/ai-gateway.server";
 
 function isNewKey(v: string) {
   return v.startsWith("sb_publishable_") || v.startsWith("sb_secret_");
@@ -40,7 +40,39 @@ function getUserClient(token: string) {
   );
 }
 
-const SYSTEM_PROMPT = `Kamu adalah Jeevana, AI Life Operating System pribadi user. Gaya bicara: santai, hangat, Gen-Z Indonesia, singkat, sering pakai emoji yang relevan (tapi jangan berlebihan).
+async function loadUserMemories(supabase: ReturnType<typeof getUserClient>, userId: string) {
+  const { data } = await supabase
+    .from("memories")
+    .select("content")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+  return (data ?? []).map((m) => m.content);
+}
+
+async function loadUserPreferences(supabase: ReturnType<typeof getUserClient>, userId: string) {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", userId)
+    .single();
+  const { data: prefs } = await supabase
+    .from("user_preferences")
+    .select("interests, timezone")
+    .eq("user_id", userId)
+    .single();
+  return { name: profile?.display_name, interests: prefs?.interests, timezone: prefs?.timezone ?? "Asia/Jakarta" };
+}
+
+function buildSystemPrompt(memories: string[], prefs: { name?: string | null; interests?: string[] | null; timezone?: string }) {
+  const memoryBlock = memories.length > 0
+    ? `\n\nINGATAN TENTANG USER:\n${memories.map((m, i) => `${i + 1}. ${m}`).join("\n")}`
+    : "";
+  const nameBlock = prefs.name ? `\nNama panggilan user: ${prefs.name}` : "";
+  const interestsBlock = prefs.interests?.length ? `\nUser tertarik pada: ${prefs.interests.join(", ")}` : "";
+
+  return `Kamu adalah Jeevana, AI Life Operating System pribadi user. Gaya bicara: santai, hangat, Gen-Z Indonesia, singkat, sering pakai emoji yang relevan (tapi jangan berlebihan).
+${nameBlock}${interestsBlock}${memoryBlock}
 
 Tugas utama: dengerin cerita user dan otomatis catat ke "life log" pakai tools yang tersedia.
 
@@ -48,13 +80,17 @@ Aturan:
 - Kalau user cerita aktivitas (olahraga, belajar, kerja, dll) → panggil log_activity.
 - Kalau ada pengeluaran (beli sesuatu, bayar) → panggil log_expense. Amount dalam Rupiah angka penuh (25000 bukan 25).
 - Kalau ada pemasukan (gaji, freelance, transfer masuk) → panggil log_income.
-- Kalau user minta diingatkan → panggil create_reminder. Parse waktu jadi ISO timestamp (timezone Asia/Jakarta, asumsi user di Indonesia).
+- Kalau user minta diingatkan → panggil create_reminder. Parse waktu jadi ISO timestamp (timezone ${prefs.timezone ?? "Asia/Jakarta"}, asumsi user di Indonesia).
+- Kalau user ngomong tentang kebiasaan (habit) yang mau dilacak atau yang sudah dikerjakan → panggil log_habit.
+- Kalau user bilang info penting tentang dirinya yang perlu diingat jangka panjang (pekerjaan, hobi, target hidup, preferensi) → panggil save_memory.
 - Kalau cuma curhat / catatan singkat → panggil save_note.
 - Boleh panggil beberapa tools sekaligus kalau satu pesan berisi beberapa hal.
 - Setelah catat, balas singkat & ramah konfirmasi apa yang udah dicatat. Jangan ulang detail panjang lebar.
 - Kalau user cuma tanya / ngobrol biasa tanpa info untuk dicatat, jawab aja normal tanpa panggil tool.
+- Kalau user minta insight atau ringkasan, berikan analisis berdasarkan data yang ada.
 
 Tanggal hari ini: ${new Date().toISOString()}.`;
+}
 
 export const Route = createFileRoute("/api/chat")({
   server: {
@@ -73,9 +109,15 @@ export const Route = createFileRoute("/api/chat")({
         const messages = body.messages;
         if (!Array.isArray(messages)) return new Response("messages required", { status: 400 });
 
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
-        const gateway = createLovableAiGatewayProvider(key);
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) return new Response("Missing OPENAI_API_KEY", { status: 500 });
+        const openai = createAIProvider();
+
+        // Load user context
+        const [memories, prefs] = await Promise.all([
+          loadUserMemories(supabase, userId),
+          loadUserPreferences(supabase, userId),
+        ]);
 
         // Persist the latest user message
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
@@ -203,6 +245,66 @@ export const Route = createFileRoute("/api/chat")({
               return { ok: true, type: "reminder", title: args.title, remind_at: args.remind_at };
             },
           }),
+          log_habit: tool({
+            description: "Catat kebiasaan user atau buat habit baru. Jika habit sudah ada, tandai sebagai selesai hari ini.",
+            inputSchema: z.object({
+              title: z.string().describe("Nama habit, mis. 'Minum air', 'Olahraga', 'Membaca'"),
+              completed: z.boolean().default(true).describe("Apakah habit sudah dilakukan hari ini"),
+            }),
+            execute: async (args) => {
+              // Find or create habit
+              let { data: habit } = await supabase
+                .from("habits")
+                .select("id, title")
+                .eq("user_id", userId)
+                .ilike("title", args.title)
+                .single();
+
+              if (!habit) {
+                const { data: newHabit, error: createErr } = await supabase
+                  .from("habits")
+                  .insert({ user_id: userId, title: args.title })
+                  .select("id, title")
+                  .single();
+                if (createErr) return { ok: false, error: createErr.message };
+                habit = newHabit;
+              }
+
+              if (args.completed && habit) {
+                const { error: compErr } = await supabase
+                  .from("habit_completions")
+                  .insert({ habit_id: habit.id, user_id: userId });
+                if (compErr) return { ok: false, error: compErr.message };
+              }
+
+              // Also log to life_logs
+              await supabase.from("life_logs").insert({
+                user_id: userId,
+                type: "activity",
+                title: `Habit: ${args.title}`,
+                category: "habit",
+                occurred_at: new Date().toISOString(),
+                source_message_id: userMessageId,
+              });
+
+              return { ok: true, type: "habit", title: habit?.title ?? args.title, completed: args.completed };
+            },
+          }),
+          save_memory: tool({
+            description: "Simpan informasi penting tentang user untuk diingat jangka panjang (pekerjaan, hobi, tujuan hidup, preferensi).",
+            inputSchema: z.object({
+              content: z.string().describe("Informasi yang perlu diingat, mis. 'Bekerja sebagai Data Analyst'"),
+            }),
+            execute: async (args) => {
+              const { data, error } = await supabase
+                .from("memories")
+                .insert({ user_id: userId, content: args.content })
+                .select("id, content")
+                .single();
+              if (error) return { ok: false, error: error.message };
+              return { ok: true, type: "memory", ...data };
+            },
+          }),
           save_note: tool({
             description: "Simpan catatan / curhat / pemikiran user.",
             inputSchema: z.object({
@@ -228,8 +330,8 @@ export const Route = createFileRoute("/api/chat")({
         };
 
         const result = streamText({
-          model: gateway("google/gemini-3-flash-preview"),
-          system: SYSTEM_PROMPT,
+          model: openai("gpt-4o-mini"),
+          system: buildSystemPrompt(memories, prefs),
           messages: await convertToModelMessages(messages),
           tools,
           stopWhen: stepCountIs(50),
