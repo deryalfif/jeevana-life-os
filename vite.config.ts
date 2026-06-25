@@ -8,7 +8,7 @@ export default defineConfig({
     tanstackStart({
       react: { babel: false },
       server: {
-        preset: "vercel", // ← preset masuk SINI, bukan plugin terpisah
+        preset: "Other", // ← preset masuk SINI, bukan plugin terpisah
       },
     }),
     tsConfigPaths(),
