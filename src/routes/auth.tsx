@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Masuk — Jeevana" }] }),
@@ -15,6 +15,7 @@ function AuthPage() {
   const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,12 +31,20 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "register") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin + "/chat" },
         });
         if (error) throw error;
+        
+        if (data.user && !data.session) {
+          setError("Pendaftaran berhasil! Cek email kamu untuk verifikasi.");
+          setMode("login");
+          setLoading(false);
+          return;
+        }
+        
         navigate({ to: "/chat" });
       } else if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -94,19 +103,28 @@ function AuthPage() {
             {mode !== "forgot" && (
               <div>
                 <label className="text-xs font-medium text-slate-600">Password</label>
+              <div className="relative">
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="min. 6 karakter"
-                  className="mt-1"
+                  className="mt-1 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
               </div>
             )}
             {error && (
-              <div className={`text-sm rounded-xl px-3 py-2 ${error.includes("dikirim") ? "text-emerald-700 bg-emerald-50" : "text-red-600 bg-red-50"}`}>
+              <div className={`text-sm rounded-xl px-3 py-2 ${error.includes("dikirim") || error.includes("berhasil") ? "text-emerald-700 bg-emerald-50" : "text-red-600 bg-red-50"}`}>
                 {error}
               </div>
             )}

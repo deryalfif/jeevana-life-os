@@ -41,12 +41,18 @@ export function Nav() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <a
-              href="#pricing"
+              href="/auth"
+              className="px-3 py-2 text-sm font-semibold text-ink/70 hover:text-ink transition-colors hidden sm:block"
+            >
+              Masuk
+            </a>
+            <a
+              href="/auth"
               className="rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-ink/10 transition-all hover:scale-105 active:scale-95"
             >
-              Start Free
+              Mulai Gratis
             </a>
 
             {/* Mobile hamburger */}

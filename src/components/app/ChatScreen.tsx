@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -84,18 +84,26 @@ export function ChatScreen() {
     staleTime: Infinity,
   });
 
-  const [token, setToken] = useState<string | null>(null);
+  const tokenRef = useRef<string | null>(null);
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? null));
+    // Fetch token immediately and also subscribe to session changes
+    supabase.auth.getSession().then(({ data }) => {
+      tokenRef.current = data.session?.access_token ?? null;
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      tokenRef.current = session?.access_token ?? null;
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        headers: () => (token ? { Authorization: `Bearer ${token}` } : ({} as Record<string, string>)),
+        // Read the token live from the ref — always up-to-date, no stale closure
+        headers: () => (tokenRef.current ? { Authorization: `Bearer ${tokenRef.current}` } : ({} as Record<string, string>)),
       }),
-    [token]
+    [] // intentionally empty — transport is created once, token is read via ref
   );
 
   const { messages, sendMessage, status } = useChat({
