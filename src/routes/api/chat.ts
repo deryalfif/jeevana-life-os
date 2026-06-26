@@ -241,7 +241,10 @@ export const Route = createFileRoute("/api/chat")({
                 title: args.title,
                 remind_at: args.remind_at,
               });
-              if (remErr) return { ok: false, error: remErr.message };
+              if (remErr) {
+                await supabase.from("life_logs").delete().eq("id", logRow.id);
+                return { ok: false, error: remErr.message };
+              }
               return { ok: true, type: "reminder", title: args.title, remind_at: args.remind_at };
             },
           }),
@@ -271,10 +274,26 @@ export const Route = createFileRoute("/api/chat")({
               }
 
               if (args.completed && habit) {
-                const { error: compErr } = await supabase
+                const startOfDay = new Date();
+                startOfDay.setHours(0, 0, 0, 0);
+                const endOfDay = new Date(startOfDay);
+                endOfDay.setDate(endOfDay.getDate() + 1);
+
+                const { data: existingCompletion } = await supabase
                   .from("habit_completions")
-                  .insert({ habit_id: habit.id, user_id: userId });
-                if (compErr) return { ok: false, error: compErr.message };
+                  .select("id")
+                  .eq("habit_id", habit.id)
+                  .eq("user_id", userId)
+                  .gte("completed_at", startOfDay.toISOString())
+                  .lt("completed_at", endOfDay.toISOString())
+                  .maybeSingle();
+
+                if (!existingCompletion) {
+                  const { error: compErr } = await supabase
+                    .from("habit_completions")
+                    .insert({ habit_id: habit.id, user_id: userId });
+                  if (compErr) return { ok: false, error: compErr.message };
+                }
               }
 
               // Also log to life_logs

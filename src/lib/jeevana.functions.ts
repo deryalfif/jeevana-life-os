@@ -8,7 +8,7 @@ export const loadInitialMessages = createServerFn({ method: "GET" })
       .from("messages")
       .select("id, role, content, parts, created_at")
       .order("created_at", { ascending: true })
-      .limit(200);
+      .limit(1000);
     if (error) throw new Error(error.message);
     return (data ?? []).map((m) => ({
       id: m.id,
@@ -27,7 +27,7 @@ export const fetchLifeLogs = createServerFn({ method: "GET" })
       .from("life_logs")
       .select("id, type, category, title, amount, duration_minutes, occurred_at, metadata, created_at")
       .order("occurred_at", { ascending: false })
-      .limit(500);
+      .limit(2000);
     if (error) throw new Error(error.message);
     return data ?? [];
   });

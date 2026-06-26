@@ -90,23 +90,25 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main className="flex-1 min-h-0 pb-16 md:pb-0">{children}</main>
 
         {/* Bottom nav (mobile) */}
-        <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 flex justify-around py-2 z-30">
-          {nav.slice(0, 4).map((item) => {
-            const active = pathname.startsWith(item.to);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`flex flex-col items-center gap-0.5 text-[10px] px-3 py-1 rounded-lg ${
-                  active ? "text-ink" : "text-slate-400"
-                }`}
-              >
-                <Icon className="size-5" />
-                {item.label}
-              </Link>
-            );
-          })}
+        <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 px-2 py-2 z-30 overflow-x-auto">
+          <div className="flex min-w-max gap-1">
+            {nav.filter((item) => item.to !== "/admin").map((item) => {
+              const active = pathname.startsWith(item.to);
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`flex flex-col items-center gap-0.5 text-[10px] px-3 py-1 rounded-lg whitespace-nowrap ${
+                    active ? "text-ink bg-slate-100" : "text-slate-400"
+                  }`}
+                >
+                  <Icon className="size-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
         </nav>
       </div>
     </div>
