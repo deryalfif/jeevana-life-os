@@ -27,10 +27,4 @@ export default defineConfig({
     tsConfigPaths(),
     tailwindcss(),
   ],
-  nitro: {
-    noExternals: bundledServerDeps,
-    externals: {
-      inline: bundledServerDeps,
-    },
-  },
-} as any);
+});
