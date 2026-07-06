@@ -69,19 +69,189 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          is_archived: boolean
+          is_pinned: boolean
+          tags: string[]
+          updated_at: string
           user_id: string
         }
         Insert: {
           content: string
           created_at?: string
           id?: string
+          is_archived?: boolean
+          is_pinned?: boolean
+          tags?: string[]
+          updated_at?: string
           user_id: string
         }
         Update: {
           content?: string
           created_at?: string
           id?: string
+          is_archived?: boolean
+          is_pinned?: boolean
+          tags?: string[]
+          updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      habits: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          frequency: string
+          target_per_period: number
+          icon: string | null
+          color: string | null
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          frequency?: string
+          target_per_period?: number
+          icon?: string | null
+          color?: string | null
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          frequency?: string
+          target_per_period?: number
+          icon?: string | null
+          color?: string | null
+          is_active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      habit_completions: {
+        Row: {
+          id: string
+          habit_id: string
+          user_id: string
+          completed_at: string
+        }
+        Insert: {
+          id?: string
+          habit_id: string
+          user_id: string
+          completed_at?: string
+        }
+        Update: {
+          id?: string
+          habit_id?: string
+          user_id?: string
+          completed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_completions_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          target_value: number | null
+          current_value: number | null
+          unit: string | null
+          deadline: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          target_value?: number | null
+          current_value?: number | null
+          unit?: string | null
+          deadline?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          target_value?: number | null
+          current_value?: number | null
+          unit?: string | null
+          deadline?: string | null
+          status?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          user_id: string
+          interests: string[]
+          onboarding_completed: boolean
+          timezone: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          interests?: string[]
+          onboarding_completed?: boolean
+          timezone?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          interests?: string[]
+          onboarding_completed?: boolean
+          timezone?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      finance_budgets: {
+        Row: {
+          id: string
+          user_id: string
+          category: string
+          amount_limit: number
+          period: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          category: string
+          amount_limit: number
+          period?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          category?: string
+          amount_limit?: number
+          period?: string
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -117,16 +287,19 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          role: string
         }
         Insert: {
           created_at?: string
           display_name?: string | null
           id: string
+          role?: string
         }
         Update: {
           created_at?: string
           display_name?: string | null
           id?: string
+          role?: string
         }
         Relationships: []
       }

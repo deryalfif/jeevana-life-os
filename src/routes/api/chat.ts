@@ -10,6 +10,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { createAIProvider } from "@/lib/ai-gateway.server";
+import { retrieveRelevantMemories } from "@/lib/memory";
 
 function isNewKey(v: string) {
   return v.startsWith("sb_publishable_") || v.startsWith("sb_secret_");
@@ -40,14 +41,35 @@ function getUserClient(token: string) {
   );
 }
 
-async function loadUserMemories(supabase: ReturnType<typeof getUserClient>, userId: string) {
+async function loadUserMemories(
+  supabase: ReturnType<typeof getUserClient>,
+  userId: string,
+  userInput: string,
+) {
+  // Ambil lebih banyak memories, lalu filter secara semantik
   const { data } = await supabase
     .from("memories")
-    .select("content")
+    .select("id, content, created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
-    .limit(20);
-  return (data ?? []).map((m) => m.content);
+    .limit(200);
+
+  const allMemories = data ?? [];
+
+  // Jika tidak ada input atau memories kosong, return beberapa yang terbaru
+  if (!userInput.trim() || allMemories.length === 0) {
+    return allMemories.slice(0, 10).map((m) => m.content);
+  }
+
+  // Semantic retrieval: ambil yang paling relevan dengan pesan user
+  const relevant = retrieveRelevantMemories(allMemories, userInput, 5);
+
+  // Jika tidak ada yang relevan, fallback ke 5 terbaru
+  if (relevant.length === 0) {
+    return allMemories.slice(0, 5).map((m) => m.content);
+  }
+
+  return relevant.map((m) => m.content);
 }
 
 async function loadUserPreferences(supabase: ReturnType<typeof getUserClient>, userId: string) {
@@ -66,7 +88,7 @@ async function loadUserPreferences(supabase: ReturnType<typeof getUserClient>, u
 
 function buildSystemPrompt(memories: string[], prefs: { name?: string | null; interests?: string[] | null; timezone?: string }) {
   const memoryBlock = memories.length > 0
-    ? `\n\nINGATAN TENTANG USER:\n${memories.map((m, i) => `${i + 1}. ${m}`).join("\n")}`
+    ? `\n\nINGATAN RELEVAN TENTANG USER (dipilih berdasarkan konteks percakapan):\n${memories.map((m, i) => `${i + 1}. ${m}`).join("\n")}`
     : "";
   const nameBlock = prefs.name ? `\nNama panggilan user: ${prefs.name}` : "";
   const interestsBlock = prefs.interests?.length ? `\nUser tertarik pada: ${prefs.interests.join(", ")}` : "";
@@ -113,9 +135,16 @@ export const Route = createFileRoute("/api/chat")({
         if (!apiKey) return new Response("Missing OPENAI_API_KEY", { status: 500 });
         const openai = createAIProvider();
 
-        // Load user context
+        // Ambil pesan terbaru dari user untuk semantic memory retrieval
+        const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
+        const latestUserText = lastUserMessage?.parts
+          .filter((p) => p.type === "text")
+          .map((p) => ("text" in p ? p.text : ""))
+          .join("") ?? "";
+
+        // Load user context (memories dipilih secara semantik)
         const [memories, prefs] = await Promise.all([
-          loadUserMemories(supabase, userId),
+          loadUserMemories(supabase, userId, latestUserText),
           loadUserPreferences(supabase, userId),
         ]);
 

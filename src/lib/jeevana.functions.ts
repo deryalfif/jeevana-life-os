@@ -115,20 +115,34 @@ export const fetchMemories = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("memories")
-      .select("id, content, created_at")
-      .order("created_at", { ascending: false });
+      .select("id, content, is_pinned, is_archived, tags, created_at, updated_at")
+      .eq("is_archived", false) // default: exclude archived
+      .order("is_pinned", { ascending: false }) // pinned duluan
+      .order("updated_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const fetchArchivedMemories = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("memories")
+      .select("id, content, is_pinned, is_archived, tags, created_at, updated_at")
+      .eq("is_archived", true)
+      .order("updated_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data ?? [];
   });
 
 export const createMemory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { content: string }) => d)
+  .inputValidator((d: { content: string; tags?: string[] }) => d)
   .handler(async ({ data, context }) => {
     const { data: memory, error } = await context.supabase
       .from("memories")
-      .insert({ user_id: context.userId, content: data.content })
-      .select()
+      .insert({ user_id: context.userId, content: data.content, tags: data.tags ?? [] })
+      .select("id, content, is_pinned, is_archived, tags, created_at, updated_at")
       .single();
     if (error) throw new Error(error.message);
     return memory;
@@ -149,7 +163,71 @@ export const updateMemory = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("memories")
-      .update({ content: data.content })
+      .update({ content: data.content, updated_at: new Date().toISOString() })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const pinMemory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; isPinned: boolean }) => d)
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("memories")
+      .update({ is_pinned: data.isPinned, updated_at: new Date().toISOString() })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const archiveMemory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; isArchived: boolean }) => d)
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("memories")
+      .update({ is_archived: data.isArchived, is_pinned: false, updated_at: new Date().toISOString() })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const addTagToMemory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; tag: string }) => d)
+  .handler(async ({ data, context }) => {
+    // Fetch existing tags dulu
+    const { data: current, error: fetchErr } = await context.supabase
+      .from("memories")
+      .select("tags")
+      .eq("id", data.id)
+      .single();
+    if (fetchErr) throw new Error(fetchErr.message);
+    const existing = current?.tags ?? [];
+    if (existing.includes(data.tag)) return { ok: true }; // sudah ada
+    const { error } = await context.supabase
+      .from("memories")
+      .update({ tags: [...existing, data.tag], updated_at: new Date().toISOString() })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const removeTagFromMemory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; tag: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { data: current, error: fetchErr } = await context.supabase
+      .from("memories")
+      .select("tags")
+      .eq("id", data.id)
+      .single();
+    if (fetchErr) throw new Error(fetchErr.message);
+    const updated = (current?.tags ?? []).filter((t: string) => t !== data.tag);
+    const { error } = await context.supabase
+      .from("memories")
+      .update({ tags: updated, updated_at: new Date().toISOString() })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -285,4 +363,82 @@ export const fetchAdminUsers = createServerFn({ method: "GET" })
       .limit(100);
     if (error) throw new Error(error.message);
     return data ?? [];
+  });
+
+export const updateUserRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { userId: string; role: string }) => d)
+  .handler(async ({ data, context }) => {
+    // Verify caller is admin/super_admin
+    const { data: callerProfile } = await context.supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", context.userId)
+      .single();
+    if (callerProfile?.role !== "admin" && callerProfile?.role !== "super_admin") {
+      throw new Error("Forbidden: Admin access required");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ role: data.role })
+      .eq("id", data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// === FINANCE BUDGETS ===
+export const fetchBudgets = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("finance_budgets")
+      .select("id, category, amount_limit, period, created_at, updated_at")
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const createBudget = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { category: string; amount_limit: number; period?: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { data: budget, error } = await context.supabase
+      .from("finance_budgets")
+      .insert({
+        user_id: context.userId,
+        category: data.category,
+        amount_limit: data.amount_limit,
+        period: data.period ?? "monthly",
+      })
+      .select("id, category, amount_limit, period, created_at, updated_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return budget;
+  });
+
+export const updateBudget = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; category?: string; amount_limit?: number; period?: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { id, ...rest } = data;
+    const { error } = await context.supabase
+      .from("finance_budgets")
+      .update(rest)
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteBudget = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("finance_budgets")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
