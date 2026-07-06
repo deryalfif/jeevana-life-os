@@ -4,7 +4,6 @@ import {
   Newspaper,
   LayoutGrid,
   Database,
-  Settings,
   Sparkles,
   LogOut,
   Calendar,
@@ -15,6 +14,7 @@ import {
   Brain,
   TrendingUp,
   ShieldAlert,
+  Crown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,7 @@ const nav = [
   { to: "/insights", label: "Insights", icon: TrendingUp },
   { to: "/feed", label: "Life Feed", icon: Newspaper },
   { to: "/logs", label: "Data Mentah", icon: Database },
+  { to: "/subscription", label: "Langganan", icon: Crown },
   { to: "/admin", label: "Admin Panel", icon: ShieldAlert },
 ] as const;
 

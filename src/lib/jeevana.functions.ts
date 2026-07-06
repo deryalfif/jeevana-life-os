@@ -442,3 +442,140 @@ export const deleteBudget = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// === SUBSCRIPTIONS (Mayar.id Payment) ===
+export const fetchSubscription = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("subscriptions")
+      .select("id, plan, status, mayar_invoice_id, payment_url, started_at, expires_at, created_at")
+      .eq("user_id", context.userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    // Default free plan jika belum ada subscription
+    if (!data) {
+      return {
+        id: null,
+        plan: "free" as const,
+        status: "active" as const,
+        mayar_invoice_id: null,
+        payment_url: null,
+        started_at: new Date().toISOString(),
+        expires_at: null,
+        created_at: new Date().toISOString(),
+      };
+    }
+    return data;
+  });
+
+export const createSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (d: { plan: "pro" | "premium"; email: string; name: string; mobile?: string }) => d,
+  )
+  .handler(async ({ data, context }) => {
+    const { createInvoice, PLAN_DETAILS } = await import("@/lib/mayar.server");
+
+    const planInfo = PLAN_DETAILS[data.plan];
+    if (!planInfo) throw new Error("Plan tidak valid");
+
+    // Cek apakah sudah ada subscription aktif dengan plan yang sama
+    const { data: existing } = await context.supabase
+      .from("subscriptions")
+      .select("id, plan, status, expires_at")
+      .eq("user_id", context.userId)
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (existing?.plan === data.plan) {
+      return { ok: false, message: "Kamu sudah berlangganan plan ini.", paymentUrl: null };
+    }
+
+    // Hitung expiry (30 hari dari sekarang)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
+    // Buat invoice di Mayar
+    const invoice = await createInvoice({
+      name: data.name,
+      email: data.email,
+      mobile: data.mobile || "000000000000",
+      redirectUrl: `${typeof process !== "undefined" && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://www.jeevana.my.id"}/subscription?status=success`,
+      description: `Jeevana Life OS - ${planInfo.name} Plan (1 bulan)`,
+      expiredAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 jam
+      items: [
+        {
+          quantity: 1,
+          rate: planInfo.price,
+          description: `${planInfo.name} Plan - 1 bulan`,
+        },
+      ],
+      extraData: {
+        user_id: context.userId,
+        plan: data.plan,
+      },
+    });
+
+    // Simpan subscription dengan status pending
+    const { error: insertError } = await context.supabase.from("subscriptions").upsert(
+      {
+        user_id: context.userId,
+        plan: data.plan,
+        status: "pending",
+        mayar_invoice_id: invoice.id,
+        payment_url: invoice.link,
+        started_at: new Date().toISOString(),
+        expires_at: expiresAt.toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+
+    if (insertError) throw new Error(insertError.message);
+
+    return {
+      ok: true,
+      message: "Invoice berhasil dibuat. Silakan bayar melalui link.",
+      paymentUrl: invoice.link,
+      invoiceId: invoice.id,
+    };
+  });
+
+export const checkInvoiceStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { invoiceId: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { getInvoiceDetail } = await import("@/lib/mayar.server");
+
+    const invoice = await getInvoiceDetail(data.invoiceId);
+
+    // Jika sudah paid, update subscription
+    if (invoice.status === "paid") {
+      const { data: sub } = await context.supabase
+        .from("subscriptions")
+        .select("id")
+        .eq("mayar_invoice_id", data.invoiceId)
+        .eq("user_id", context.userId)
+        .maybeSingle();
+
+      if (sub) {
+        await context.supabase
+          .from("subscriptions")
+          .update({
+            status: "active",
+            mayar_transaction_id: invoice.transactionId,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", sub.id);
+      }
+    }
+
+    return {
+      status: invoice.status,
+      amount: invoice.amount,
+      paymentUrl: invoice.paymentUrl,
+    };
+  });

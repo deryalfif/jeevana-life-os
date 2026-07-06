@@ -255,6 +255,48 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          plan: string
+          status: string
+          mayar_invoice_id: string | null
+          mayar_transaction_id: string | null
+          payment_url: string | null
+          started_at: string
+          expires_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plan?: string
+          status?: string
+          mayar_invoice_id?: string | null
+          mayar_transaction_id?: string | null
+          payment_url?: string | null
+          started_at?: string
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plan?: string
+          status?: string
+          mayar_invoice_id?: string | null
+          mayar_transaction_id?: string | null
+          payment_url?: string | null
+          started_at?: string
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string

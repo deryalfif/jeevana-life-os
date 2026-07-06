@@ -28,6 +28,8 @@ import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/c
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authenticated/activities'
+import { Route as AuthenticatedSubscriptionRouteImport } from './routes/_authenticated/subscription'
+import { Route as ApiMayarWebhookRouteImport } from './routes/api/mayar-webhook'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -123,6 +125,16 @@ const AuthenticatedActivitiesRoute = AuthenticatedActivitiesRouteImport.update({
   path: '/activities',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSubscriptionRoute = AuthenticatedSubscriptionRouteImport.update({
+  id: '/subscription',
+  path: '/subscription',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiMayarWebhookRoute = ApiMayarWebhookRouteImport.update({
+  id: '/api/mayar-webhook',
+  path: '/api/mayar-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -142,7 +154,9 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/reminders': typeof AuthenticatedRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/subscription': typeof AuthenticatedSubscriptionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/mayar-webhook': typeof ApiMayarWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -162,7 +176,9 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/reminders': typeof AuthenticatedRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/subscription': typeof AuthenticatedSubscriptionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/mayar-webhook': typeof ApiMayarWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,7 +200,9 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/subscription': typeof AuthenticatedSubscriptionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/mayar-webhook': typeof ApiMayarWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -206,7 +224,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/reminders'
     | '/settings'
+    | '/subscription'
     | '/api/chat'
+    | '/api/mayar-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -226,7 +246,9 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/reminders'
     | '/settings'
+    | '/subscription'
     | '/api/chat'
+    | '/api/mayar-webhook'
   id:
     | '__root__'
     | '/'
@@ -247,7 +269,9 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/reminders'
     | '/_authenticated/settings'
+    | '/_authenticated/subscription'
     | '/api/chat'
+    | '/api/mayar-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -256,6 +280,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiMayarWebhookRoute: typeof ApiMayarWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -393,6 +418,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedActivitiesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/subscription': {
+      id: '/_authenticated/subscription'
+      path: '/subscription'
+      fullPath: '/subscription'
+      preLoaderRoute: typeof AuthenticatedSubscriptionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/mayar-webhook': {
+      id: '/api/mayar-webhook'
+      path: '/api/mayar-webhook'
+      fullPath: '/api/mayar-webhook'
+      preLoaderRoute: typeof ApiMayarWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -411,6 +450,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSubscriptionRoute: typeof AuthenticatedSubscriptionRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -428,6 +468,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSubscriptionRoute: AuthenticatedSubscriptionRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -439,6 +480,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiMayarWebhookRoute: ApiMayarWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

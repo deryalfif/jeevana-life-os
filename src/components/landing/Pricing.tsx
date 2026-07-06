@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function Pricing() {
   return (
@@ -18,6 +19,7 @@ export function Pricing() {
             subtitle="Forever free"
             features={["Basic Logging", "Expense Tracking", "Daily Summary"]}
             cta="Get Started"
+            href="/auth"
           />
           <PricingCard
             tier="PRO"
@@ -30,6 +32,7 @@ export function Pricing() {
               "Full Dashboard Analytics",
             ]}
             cta="Choose Pro"
+            href="/subscription"
             highlight
           />
           <PricingCard
@@ -43,6 +46,7 @@ export function Pricing() {
               "Early Access Features",
             ]}
             cta="Go Premium"
+            href="/subscription"
           />
         </div>
       </div>
@@ -56,6 +60,7 @@ function PricingCard({
   subtitle,
   features,
   cta,
+  href,
   highlight = false,
 }: {
   tier: string;
@@ -63,6 +68,7 @@ function PricingCard({
   subtitle: string;
   features: string[];
   cta: string;
+  href: string;
   highlight?: boolean;
 }) {
   return (
@@ -108,8 +114,8 @@ function PricingCard({
         ))}
       </ul>
 
-      <a
-        href="#"
+      <Link
+        to={href}
         className={`mt-auto block w-full rounded-full py-3 text-center text-sm font-bold transition-all ${
           highlight
             ? "bg-white text-ink hover:bg-white/90"
@@ -117,7 +123,7 @@ function PricingCard({
         }`}
       >
         {cta}
-      </a>
+      </Link>
     </div>
   );
 }
