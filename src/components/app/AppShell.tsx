@@ -4,7 +4,6 @@ import {
   Newspaper,
   LayoutGrid,
   Database,
-  Sparkles,
   LogOut,
   Calendar,
   Activity,
@@ -53,9 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex w-60 shrink-0 flex-col border-r border-slate-200/70 bg-white">
         <Link to="/chat" className="flex items-center gap-2 px-5 h-16 border-b border-slate-200/70">
-          <div className="size-8 rounded-xl bg-gradient-to-br from-brand to-grape grid place-items-center">
-            <Sparkles className="size-4 text-white" />
-          </div>
+          <img src="/favicon.png" alt="Jeevana" className="size-8 rounded-xl object-cover" />
           <span className="font-bold tracking-tight">Jeevana</span>
         </Link>
         <nav className="flex-1 p-3 space-y-1">
