@@ -18,12 +18,7 @@ export default defineConfig({
     noExternal: bundledServerDeps,
   },
   plugins: [
-    tanstackStart({
-      react: { babel: false },
-      server: {
-        preset: "vercel",
-      },
-    }),
+    tanstackStart(),
     tsConfigPaths(),
     tailwindcss(),
   ],

@@ -36,7 +36,15 @@ function formatIDR(n: number) {
   }).format(n);
 }
 
-function ToolBadge({ result }: { result: unknown }) {
+interface ToolResult {
+  ok?: boolean;
+  type?: string;
+  title?: string;
+  amount?: number | string;
+  duration_minutes?: number;
+}
+
+function ToolBadge({ result }: { result: ToolResult }) {
   if (!result) {
     return (
       <div className="mt-2 inline-flex items-center gap-2 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">

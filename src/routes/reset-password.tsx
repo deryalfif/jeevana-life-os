@@ -16,7 +16,7 @@ function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    supabase.auth.onAuthStateChange(async (event, _session) => {
       if (event == "PASSWORD_RECOVERY") {
         // User is ready to type a new password
       }
