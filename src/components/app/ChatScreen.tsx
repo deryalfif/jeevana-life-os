@@ -29,10 +29,14 @@ const SUGGESTIONS = [
 ];
 
 function formatIDR(n: number) {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
-function ToolBadge({ result }: { result: any }) {
+function ToolBadge({ result }: { result: unknown }) {
   if (!result) {
     return (
       <div className="mt-2 inline-flex items-center gap-2 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
@@ -51,24 +55,26 @@ function ToolBadge({ result }: { result: any }) {
     result.type === "expense"
       ? `${result.title} · ${formatIDR(Number(result.amount ?? 0))}`
       : result.type === "income"
-      ? `+${formatIDR(Number(result.amount ?? 0))} · ${result.title}`
-      : result.type === "reminder"
-      ? `Pengingat: ${result.title}`
-      : result.type === "note"
-      ? `Catatan disimpan`
-      : `${result.title}${result.duration_minutes ? ` · ${result.duration_minutes} mnt` : ""}`;
+        ? `+${formatIDR(Number(result.amount ?? 0))} · ${result.title}`
+        : result.type === "reminder"
+          ? `Pengingat: ${result.title}`
+          : result.type === "note"
+            ? `Catatan disimpan`
+            : `${result.title}${result.duration_minutes ? ` · ${result.duration_minutes} mnt` : ""}`;
   const tone =
     result.type === "expense"
       ? "from-rose-50 to-rose-100 text-rose-700 border-rose-200"
       : result.type === "income"
-      ? "from-emerald-50 to-emerald-100 text-emerald-700 border-emerald-200"
-      : result.type === "reminder"
-      ? "from-amber-50 to-amber-100 text-amber-800 border-amber-200"
-      : result.type === "note"
-      ? "from-slate-50 to-slate-100 text-slate-700 border-slate-200"
-      : "from-blue-50 to-blue-100 text-blue-700 border-blue-200";
+        ? "from-emerald-50 to-emerald-100 text-emerald-700 border-emerald-200"
+        : result.type === "reminder"
+          ? "from-amber-50 to-amber-100 text-amber-800 border-amber-200"
+          : result.type === "note"
+            ? "from-slate-50 to-slate-100 text-slate-700 border-slate-200"
+            : "from-blue-50 to-blue-100 text-blue-700 border-blue-200";
   return (
-    <div className={`mt-2 inline-flex items-center gap-2 text-xs bg-gradient-to-br ${tone} border rounded-xl px-3 py-1.5`}>
+    <div
+      className={`mt-2 inline-flex items-center gap-2 text-xs bg-gradient-to-br ${tone} border rounded-xl px-3 py-1.5`}
+    >
       <CheckCircle2 className="size-3.5" />
       <span className="font-medium">Dicatat:</span> {label}
     </div>
@@ -90,7 +96,9 @@ export function ChatScreen() {
     supabase.auth.getSession().then(({ data }) => {
       tokenRef.current = data.session?.access_token ?? null;
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       tokenRef.current = session?.access_token ?? null;
     });
     return () => subscription.unsubscribe();
@@ -101,9 +109,12 @@ export function ChatScreen() {
       new DefaultChatTransport({
         api: "/api/chat",
         // Read the token live from the ref — always up-to-date, no stale closure
-        headers: () => (tokenRef.current ? { Authorization: `Bearer ${tokenRef.current}` } : ({} as Record<string, string>)),
+        headers: () =>
+          tokenRef.current
+            ? { Authorization: `Bearer ${tokenRef.current}` }
+            : ({} as Record<string, string>),
       }),
-    [] // intentionally empty — transport is created once, token is read via ref
+    [], // intentionally empty — transport is created once, token is read via ref
   );
 
   const { messages, sendMessage, status } = useChat({
@@ -176,6 +187,7 @@ export function ChatScreen() {
                       );
                     }
                     if (part.type.startsWith("tool-")) {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       const output = (part as any).output;
                       return <ToolBadge key={i} result={output} />;
                     }

@@ -57,8 +57,14 @@ function ResetPasswordPage() {
               className="mt-1"
             />
           </div>
-          {error && <div className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{error}</div>}
-          <Button type="submit" disabled={loading} className="w-full bg-ink hover:bg-ink/90 text-white rounded-xl h-11">
+          {error && (
+            <div className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2">{error}</div>
+          )}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-ink hover:bg-ink/90 text-white rounded-xl h-11"
+          >
             {loading ? "Menyimpan..." : "Update Password"}
           </Button>
         </form>

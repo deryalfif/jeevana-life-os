@@ -47,20 +47,9 @@ function formatRp(n: number) {
   }).format(n);
 }
 
-function BudgetProgressBar({
-  pct,
-  label,
-}: {
-  pct: number;
-  label?: string;
-}) {
+function BudgetProgressBar({ pct, label }: { pct: number; label?: string }) {
   const clamp = Math.min(pct, 100);
-  const color =
-    clamp >= 90
-      ? "bg-red-500"
-      : clamp >= 70
-        ? "bg-amber-400"
-        : "bg-emerald-500";
+  const color = clamp >= 90 ? "bg-red-500" : clamp >= 70 ? "bg-amber-400" : "bg-emerald-500";
   return (
     <div className="h-2 bg-slate-100 rounded-full overflow-hidden" title={label}>
       <div
@@ -177,11 +166,15 @@ export function FinanceScreen() {
           (l) =>
             l.type === "expense" &&
             (l.category ?? "lainnya") === b.category &&
-            new Date(l.occurred_at) >= sevenDaysAgo
+            new Date(l.occurred_at) >= sevenDaysAgo,
         )
         .reduce((s, l) => s + (l.amount ?? 0), 0);
     }
-    return { ...b, spent, pct: b.amount_limit > 0 ? Math.round((spent / b.amount_limit) * 100) : 0 };
+    return {
+      ...b,
+      spent,
+      pct: b.amount_limit > 0 ? Math.round((spent / b.amount_limit) * 100) : 0,
+    };
   });
 
   // Daily spending (last 7 days)
@@ -191,9 +184,7 @@ export function FinanceScreen() {
     d.setDate(d.getDate() - i);
     const dayExpenses = logs
       .filter(
-        (l) =>
-          l.type === "expense" &&
-          new Date(l.occurred_at).toDateString() === d.toDateString()
+        (l) => l.type === "expense" && new Date(l.occurred_at).toDateString() === d.toDateString(),
       )
       .reduce((s, l) => s + (l.amount ?? 0), 0);
     dailyData.push({
@@ -505,10 +496,7 @@ export function FinanceScreen() {
         ) : (
           <div className="divide-y divide-slate-100">
             {[...expenses, ...incomes]
-              .sort(
-                (a, b) =>
-                  new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime()
-              )
+              .sort((a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime())
               .slice(0, 30)
               .map((t) => (
                 <div key={t.id} className="px-5 py-4 flex items-center gap-4">

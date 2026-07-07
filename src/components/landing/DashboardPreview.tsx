@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { Activity, Bell, Brain, Calendar, Coffee, Dumbbell, Heart, Sparkles, Wallet } from "lucide-react";
+import {
+  Activity,
+  Bell,
+  Brain,
+  Calendar,
+  Coffee,
+  Dumbbell,
+  Heart,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 
 const TABS = [
   { label: "Home Dashboard", id: "home" },
@@ -77,7 +87,9 @@ function HomeDashboard() {
               { l: "Goals Hit", v: "7/9", c: "#8B5CF6" },
             ].map((m) => (
               <div key={m.l} className="rounded-2xl bg-surface p-4">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-ink/40">{m.l}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-ink/40">
+                  {m.l}
+                </div>
                 <div className="mt-1 text-2xl font-extrabold">{m.v}</div>
                 <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-canvas">
                   <div className="h-full w-2/3" style={{ background: m.c }} />
@@ -89,7 +101,9 @@ function HomeDashboard() {
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             <div className="rounded-2xl bg-surface p-4 md:col-span-2">
               <div className="mb-3 flex items-center justify-between">
-                <div className="text-xs font-bold uppercase tracking-wider text-ink/40">Spending This Week</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-ink/40">
+                  Spending This Week
+                </div>
                 <div className="text-[10px] font-bold text-emerald-600">−18% vs last</div>
               </div>
               <WeeklyChart />
@@ -98,11 +112,13 @@ function HomeDashboard() {
             <div className="rounded-2xl bg-gradient-to-br from-ink to-[#1e293b] p-4 text-white">
               <div className="flex items-center gap-2">
                 <Sparkles className="size-4 text-grape" />
-                <div className="text-[10px] font-bold uppercase tracking-wider text-white/60">AI Insight</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-white/60">
+                  AI Insight
+                </div>
               </div>
               <p className="mt-3 text-sm leading-relaxed">
-                You're spending <span className="font-bold text-grape">30% less</span> on coffee this week. Nice
-                streak — keep it up.
+                You're spending <span className="font-bold text-grape">30% less</span> on coffee
+                this week. Nice streak — keep it up.
               </p>
             </div>
           </div>
@@ -130,7 +146,9 @@ function FinanceDashboard() {
               { l: "Budget Left", v: "62%", c: "#8B5CF6" },
             ].map((m) => (
               <div key={m.l} className="rounded-2xl bg-surface p-4">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-ink/40">{m.l}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-ink/40">
+                  {m.l}
+                </div>
                 <div className="mt-1 text-2xl font-extrabold">{m.v}</div>
                 <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-canvas">
                   <div className="h-full w-2/3" style={{ background: m.c }} />
@@ -140,7 +158,9 @@ function FinanceDashboard() {
           </div>
 
           <div className="rounded-2xl bg-surface p-4">
-            <div className="mb-3 text-xs font-bold uppercase tracking-wider text-ink/40">Expense Breakdown</div>
+            <div className="mb-3 text-xs font-bold uppercase tracking-wider text-ink/40">
+              Expense Breakdown
+            </div>
             <WeeklyChart />
           </div>
         </div>
@@ -165,7 +185,9 @@ function ActivityDashboard() {
               { l: "Streak", v: "5 days", c: "#F59E0B" },
             ].map((m) => (
               <div key={m.l} className="rounded-2xl bg-surface p-4">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-ink/40">{m.l}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-ink/40">
+                  {m.l}
+                </div>
                 <div className="mt-1 text-2xl font-extrabold">{m.v}</div>
                 <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-canvas">
                   <div className="h-full w-2/3" style={{ background: m.c }} />
@@ -175,7 +197,9 @@ function ActivityDashboard() {
           </div>
 
           <div className="rounded-2xl bg-surface p-4">
-            <div className="mb-3 text-xs font-bold uppercase tracking-wider text-ink/40">Activity This Week</div>
+            <div className="mb-3 text-xs font-bold uppercase tracking-wider text-ink/40">
+              Activity This Week
+            </div>
             <WeeklyChart />
           </div>
         </div>
@@ -236,7 +260,9 @@ function RecentActivity() {
   return (
     <div className="rounded-2xl bg-surface p-4">
       <div className="mb-3 flex items-center justify-between">
-        <div className="text-xs font-bold uppercase tracking-wider text-ink/40">Recent Activity</div>
+        <div className="text-xs font-bold uppercase tracking-wider text-ink/40">
+          Recent Activity
+        </div>
         <button className="text-[10px] font-bold text-brand">View all</button>
       </div>
       <div className="space-y-2">

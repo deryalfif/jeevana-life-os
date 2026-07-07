@@ -5,7 +5,10 @@ const FEATURES = [
     n: "01",
     title: "AI Daily Logging",
     input: "Hari ini jogging 5 km.",
-    output: [{ label: "ACTIVITY", v: "Running" }, { label: "DISTANCE", v: "5 km" }],
+    output: [
+      { label: "ACTIVITY", v: "Running" },
+      { label: "DISTANCE", v: "5 km" },
+    ],
     color: "#3B82F6",
     icon: Activity,
   },
@@ -13,7 +16,10 @@ const FEATURES = [
     n: "02",
     title: "Expense Tracking",
     input: "Beli kopi 25 ribu.",
-    output: [{ label: "TYPE", v: "Expense" }, { label: "AMOUNT", v: "Rp 25.000" }],
+    output: [
+      { label: "TYPE", v: "Expense" },
+      { label: "AMOUNT", v: "Rp 25.000" },
+    ],
     color: "#EF4444",
     icon: Wallet,
   },
@@ -21,7 +27,10 @@ const FEATURES = [
     n: "03",
     title: "Income Tracking",
     input: "Project freelance dibayar 2 juta.",
-    output: [{ label: "TYPE", v: "Income" }, { label: "AMOUNT", v: "Rp 2.000.000" }],
+    output: [
+      { label: "TYPE", v: "Income" },
+      { label: "AMOUNT", v: "Rp 2.000.000" },
+    ],
     color: "#10B981",
     icon: DollarSign,
   },
@@ -29,7 +38,10 @@ const FEATURES = [
     n: "04",
     title: "Reminder & Task",
     input: "Ingatkan saya bayar listrik tanggal 10.",
-    output: [{ label: "TASK", v: "Bayar listrik" }, { label: "DATE", v: "10 Nov" }],
+    output: [
+      { label: "TASK", v: "Bayar listrik" },
+      { label: "DATE", v: "10 Nov" },
+    ],
     color: "#8B5CF6",
     icon: Bell,
   },
@@ -37,7 +49,10 @@ const FEATURES = [
     n: "05",
     title: "Daily Summary",
     input: "[Auto · 21:00]",
-    output: [{ label: "EVENTS", v: "12 logged" }, { label: "INSIGHT", v: "Active day" }],
+    output: [
+      { label: "EVENTS", v: "12 logged" },
+      { label: "INSIGHT", v: "Active day" },
+    ],
     color: "#F59E0B",
     icon: Moon,
   },
@@ -123,7 +138,10 @@ function FeatureCard({
         </div>
         <div className="flex flex-wrap gap-2">
           {f.output.map((o) => (
-            <div key={o.label} className="rounded-xl border border-black/5 bg-surface px-3 py-2 text-xs">
+            <div
+              key={o.label}
+              className="rounded-xl border border-black/5 bg-surface px-3 py-2 text-xs"
+            >
               <span className="font-mono font-bold" style={{ color: f.color }}>
                 {o.label}:
               </span>{" "}

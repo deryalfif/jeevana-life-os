@@ -35,7 +35,8 @@ export const Route = createFileRoute("/api/mayar-webhook")({
           const transactionId =
             payload.transactionId ?? payload.transaction_id ?? payload.data?.transactionId;
           const status = payload.status ?? payload.data?.status;
-          const invoiceId = payload.paymentLinkId ?? payload.invoiceId ?? payload.data?.paymentLinkId;
+          const invoiceId =
+            payload.paymentLinkId ?? payload.invoiceId ?? payload.data?.paymentLinkId;
 
           if (!transactionId && !invoiceId) {
             return new Response(JSON.stringify({ ok: true, skipped: "no identifier" }), {
@@ -59,7 +60,10 @@ export const Route = createFileRoute("/api/mayar-webhook")({
           const { data: sub } = await query.maybeSingle();
 
           if (!sub) {
-            console.warn("[mayar-webhook] Subscription not found for:", { invoiceId, transactionId });
+            console.warn("[mayar-webhook] Subscription not found for:", {
+              invoiceId,
+              transactionId,
+            });
             return new Response(JSON.stringify({ ok: true, skipped: "not found" }), {
               status: 200,
               headers: { "Content-Type": "application/json" },

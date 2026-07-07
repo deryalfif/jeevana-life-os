@@ -14,16 +14,25 @@ type Log = {
 };
 
 function formatIDR(n: number) {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
 function iconFor(t: Log["type"]) {
   switch (t) {
-    case "activity": return { Icon: Activity, bg: "bg-blue-50 text-blue-600" };
-    case "expense": return { Icon: ShoppingBag, bg: "bg-rose-50 text-rose-600" };
-    case "income": return { Icon: Wallet, bg: "bg-emerald-50 text-emerald-600" };
-    case "reminder": return { Icon: Bell, bg: "bg-amber-50 text-amber-700" };
-    case "note": return { Icon: StickyNote, bg: "bg-slate-100 text-slate-600" };
+    case "activity":
+      return { Icon: Activity, bg: "bg-blue-50 text-blue-600" };
+    case "expense":
+      return { Icon: ShoppingBag, bg: "bg-rose-50 text-rose-600" };
+    case "income":
+      return { Icon: Wallet, bg: "bg-emerald-50 text-emerald-600" };
+    case "reminder":
+      return { Icon: Bell, bg: "bg-amber-50 text-amber-700" };
+    case "note":
+      return { Icon: StickyNote, bg: "bg-slate-100 text-slate-600" };
   }
 }
 
@@ -32,10 +41,16 @@ function groupLabel(date: Date) {
   const yest = new Date();
   yest.setDate(yest.getDate() - 1);
   const sameDay = (a: Date, b: Date) =>
-    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
   if (sameDay(date, today)) return "Hari ini";
   if (sameDay(date, yest)) return "Kemarin";
-  return new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long" }).format(date);
+  return new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date);
 }
 
 export function FeedScreen() {
@@ -63,7 +78,9 @@ export function FeedScreen() {
         <div className="mt-10 bg-white border border-slate-200/70 rounded-3xl p-10 text-center">
           <div className="text-4xl">📭</div>
           <p className="mt-3 font-semibold">Belum ada cerita</p>
-          <p className="text-sm text-slate-500 mt-1">Mulai ngobrol di tab Chat — entri akan muncul di sini otomatis.</p>
+          <p className="text-sm text-slate-500 mt-1">
+            Mulai ngobrol di tab Chat — entri akan muncul di sini otomatis.
+          </p>
         </div>
       )}
 
@@ -74,9 +91,15 @@ export function FeedScreen() {
             <ol className="mt-3 space-y-2">
               {items.map((log) => {
                 const { Icon, bg } = iconFor(log.type);
-                const time = new Date(log.occurred_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+                const time = new Date(log.occurred_at).toLocaleTimeString("id-ID", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
                 return (
-                  <li key={log.id} className="bg-white border border-slate-200/70 rounded-2xl p-4 flex items-start gap-3">
+                  <li
+                    key={log.id}
+                    className="bg-white border border-slate-200/70 rounded-2xl p-4 flex items-start gap-3"
+                  >
                     <div className={`size-9 rounded-xl grid place-items-center ${bg}`}>
                       <Icon className="size-4" />
                     </div>
@@ -89,8 +112,11 @@ export function FeedScreen() {
                       </div>
                     </div>
                     {log.amount != null && (
-                      <div className={`text-sm font-semibold ${log.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
-                        {log.type === "income" ? "+" : "−"}{formatIDR(Number(log.amount))}
+                      <div
+                        className={`text-sm font-semibold ${log.type === "income" ? "text-emerald-600" : "text-rose-600"}`}
+                      >
+                        {log.type === "income" ? "+" : "−"}
+                        {formatIDR(Number(log.amount))}
                       </div>
                     )}
                   </li>

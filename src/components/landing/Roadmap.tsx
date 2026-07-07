@@ -36,7 +36,10 @@ export function Roadmap() {
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {PHASES.map((p) => (
-            <div key={p.label} className="flex flex-col gap-4 rounded-3xl border border-black/5 bg-surface p-6">
+            <div
+              key={p.label}
+              className="flex flex-col gap-4 rounded-3xl border border-black/5 bg-surface p-6"
+            >
               <div className="flex items-center justify-between">
                 <div className="text-xs font-bold uppercase tracking-widest text-ink/40">
                   {p.label.split("—")[0]}

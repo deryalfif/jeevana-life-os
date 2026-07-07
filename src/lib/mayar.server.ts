@@ -77,9 +77,7 @@ export async function createInvoice(
   return json.data!;
 }
 
-export async function getInvoiceDetail(
-  invoiceId: string,
-): Promise<MayarInvoiceDetail> {
+export async function getInvoiceDetail(invoiceId: string): Promise<MayarInvoiceDetail> {
   const res = await fetch(`${MAYAR_BASE_URL}/invoice/${invoiceId}`, {
     method: "GET",
     headers: headers(),

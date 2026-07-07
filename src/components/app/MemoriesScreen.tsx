@@ -11,7 +11,18 @@ import {
   archiveMemory,
 } from "@/lib/jeevana.functions";
 import { retrieveRelevantMemories } from "@/lib/memory";
-import { Brain, Plus, Pencil, Trash2, Save, X, Search, Pin, Archive, ArchiveRestore } from "lucide-react";
+import {
+  Brain,
+  Plus,
+  Pencil,
+  Trash2,
+  Save,
+  X,
+  Search,
+  Pin,
+  Archive,
+  ArchiveRestore,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -123,8 +134,9 @@ export function MemoriesScreen() {
           <div>
             <div className="font-medium text-sm">Apa itu Memory?</div>
             <p className="text-xs text-slate-600 mt-1">
-              Memory adalah informasi tentang dirimu yang diingat AI secara jangka panjang — pekerjaanmu, hobimu, tujuan hidupmu.
-              Semakin banyak memory, semakin personal AI-nya. Kamu bisa pin, archive, atau hapus memory kapan saja.
+              Memory adalah informasi tentang dirimu yang diingat AI secara jangka panjang —
+              pekerjaanmu, hobimu, tujuan hidupmu. Semakin banyak memory, semakin personal AI-nya.
+              Kamu bisa pin, archive, atau hapus memory kapan saja.
             </p>
           </div>
         </div>
@@ -141,11 +153,12 @@ export function MemoriesScreen() {
         ).map(({ key, label, count }) => (
           <button
             key={key}
-            onClick={() => { setTab(key); setSearchQuery(""); }}
+            onClick={() => {
+              setTab(key);
+              setSearchQuery("");
+            }}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              tab === key
-                ? "bg-white shadow-sm text-ink"
-                : "text-slate-500 hover:text-ink"
+              tab === key ? "bg-white shadow-sm text-ink" : "text-slate-500 hover:text-ink"
             }`}
           >
             {label}
@@ -229,22 +242,24 @@ export function MemoriesScreen() {
               {tab === "pinned"
                 ? "Belum ada memory yang di-pin"
                 : tab === "archived"
-                ? "Arsip kosong"
-                : "Belum ada memory"}
+                  ? "Arsip kosong"
+                  : "Belum ada memory"}
             </p>
             <p className="text-sm text-slate-500 mt-1">
               {tab === "pinned"
                 ? "Pin memory penting dengan klik ikon 📌 di setiap memory."
                 : tab === "archived"
-                ? "Memory yang kamu arsipkan akan muncul di sini."
-                : 'Ceritakan tentang dirimu di AI Chat — AI akan otomatis menyimpannya.'}
+                  ? "Memory yang kamu arsipkan akan muncul di sini."
+                  : "Ceritakan tentang dirimu di AI Chat — AI akan otomatis menyimpannya."}
             </p>
           </div>
         ) : displayedMemories.length === 0 && searchQuery ? (
           <div className="bg-white border border-slate-200/70 rounded-3xl p-10 text-center">
             <div className="text-4xl">🔍</div>
             <p className="mt-3 font-semibold">Tidak ada hasil</p>
-            <p className="text-sm text-slate-500 mt-1">Coba kata kunci lain atau hapus pencarian.</p>
+            <p className="text-sm text-slate-500 mt-1">
+              Coba kata kunci lain atau hapus pencarian.
+            </p>
           </div>
         ) : (
           displayedMemories.map((m) => (
@@ -305,7 +320,9 @@ export function MemoriesScreen() {
                     )}
 
                     <p className="text-xs text-slate-400 mt-2">
-                      {m.is_pinned && <span className="text-brand font-medium mr-2">📌 Pinned</span>}
+                      {m.is_pinned && (
+                        <span className="text-brand font-medium mr-2">📌 Pinned</span>
+                      )}
                       Disimpan{" "}
                       {new Date(m.created_at).toLocaleDateString("id-ID", {
                         day: "numeric",

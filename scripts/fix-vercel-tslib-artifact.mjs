@@ -162,7 +162,7 @@ function patchFile(filePath) {
       } else {
         missing.push(helper);
         console.warn(
-          `[fix-vercel-tslib] WARNING: No inline implementation for tslib helper "${helper}" in ${filePath}`
+          `[fix-vercel-tslib] WARNING: No inline implementation for tslib helper "${helper}" in ${filePath}`,
         );
       }
     }
@@ -233,10 +233,8 @@ for (const dir of searchDirs) {
 
 if (totalPatched === 0) {
   console.log(
-    "[fix-vercel-tslib] No tslib imports found in build output (already clean or not present)."
+    "[fix-vercel-tslib] No tslib imports found in build output (already clean or not present).",
   );
 } else {
-  console.log(
-    `[fix-vercel-tslib] Done — inlined tslib helpers in ${totalPatched} file(s).`
-  );
+  console.log(`[fix-vercel-tslib] Done — inlined tslib helpers in ${totalPatched} file(s).`);
 }

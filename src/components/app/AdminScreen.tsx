@@ -76,9 +76,7 @@ function RoleSelector({
           {r === "admin" && <ShieldCheck className="size-3.5 text-red-500" />}
           {r === "user" && <Users className="size-3.5 text-slate-500" />}
           <span className="capitalize">{r.replace("_", " ")}</span>
-          {r === currentRole && (
-            <span className="ml-auto text-[10px] text-slate-400">aktif</span>
-          )}
+          {r === currentRole && <span className="ml-auto text-[10px] text-slate-400">aktif</span>}
         </button>
       ))}
     </div>
@@ -142,7 +140,7 @@ export function AdminScreen() {
             <span className="text-xs uppercase tracking-wider text-slate-500">Total Users</span>
           </div>
           <div className="text-3xl font-bold mt-2">
-            {loadingStats ? "..." : stats?.totalUsers ?? 0}
+            {loadingStats ? "..." : (stats?.totalUsers ?? 0)}
           </div>
           <div className="text-xs text-slate-400 mt-1">
             {roleCounts["admin"] ?? 0} admin · {roleCounts["super_admin"] ?? 0} super admin
@@ -154,7 +152,7 @@ export function AdminScreen() {
             <span className="text-xs uppercase tracking-wider text-slate-500">Total Life Logs</span>
           </div>
           <div className="text-3xl font-bold mt-2">
-            {loadingStats ? "..." : stats?.totalLogs ?? 0}
+            {loadingStats ? "..." : (stats?.totalLogs ?? 0)}
           </div>
         </div>
         <div className="bg-white border border-slate-200/70 rounded-2xl p-6">
@@ -163,7 +161,7 @@ export function AdminScreen() {
             <span className="text-xs uppercase tracking-wider text-slate-500">Total Messages</span>
           </div>
           <div className="text-3xl font-bold mt-2">
-            {loadingStats ? "..." : stats?.totalMessages ?? 0}
+            {loadingStats ? "..." : (stats?.totalMessages ?? 0)}
           </div>
         </div>
       </div>
@@ -178,9 +176,7 @@ export function AdminScreen() {
             {ROLES.map((r) => (
               <div key={r} className="flex items-center gap-2">
                 <RoleBadge role={r} />
-                <span className="text-sm font-semibold text-slate-700">
-                  {roleCounts[r] ?? 0}
-                </span>
+                <span className="text-sm font-semibold text-slate-700">{roleCounts[r] ?? 0}</span>
               </div>
             ))}
           </div>
@@ -225,9 +221,7 @@ export function AdminScreen() {
                       <td className="px-6 py-4">
                         <div className="relative inline-block">
                           <button
-                            onClick={() =>
-                              setOpenDropdown(openDropdown === u.id ? null : u.id)
-                            }
+                            onClick={() => setOpenDropdown(openDropdown === u.id ? null : u.id)}
                             className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-slate-600"
                           >
                             Ganti Role <ChevronDown className="size-3" />

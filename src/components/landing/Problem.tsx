@@ -1,11 +1,41 @@
 import { Calendar, FileText, Heart, ListChecks, Wallet } from "lucide-react";
 
 const ITEMS = [
-  { icon: FileText, name: "Notes App", desc: "Scattered journals and lost ideas.", span: "md:col-span-2 md:row-span-2", rotate: "-rotate-2" },
-  { icon: Wallet, name: "Finance App", desc: "Manual entry. Static spreadsheets.", span: "md:col-span-2", rotate: "rotate-1" },
-  { icon: Calendar, name: "Calendar", desc: "Silent blocks of time.", span: "md:col-span-2", rotate: "-rotate-1" },
-  { icon: ListChecks, name: "Task Manager", desc: "Forgotten reminders.", span: "md:col-span-3", rotate: "rotate-1" },
-  { icon: Heart, name: "Health App", desc: "Ignored habits & stats.", span: "md:col-span-3", rotate: "-rotate-1" },
+  {
+    icon: FileText,
+    name: "Notes App",
+    desc: "Scattered journals and lost ideas.",
+    span: "md:col-span-2 md:row-span-2",
+    rotate: "-rotate-2",
+  },
+  {
+    icon: Wallet,
+    name: "Finance App",
+    desc: "Manual entry. Static spreadsheets.",
+    span: "md:col-span-2",
+    rotate: "rotate-1",
+  },
+  {
+    icon: Calendar,
+    name: "Calendar",
+    desc: "Silent blocks of time.",
+    span: "md:col-span-2",
+    rotate: "-rotate-1",
+  },
+  {
+    icon: ListChecks,
+    name: "Task Manager",
+    desc: "Forgotten reminders.",
+    span: "md:col-span-3",
+    rotate: "rotate-1",
+  },
+  {
+    icon: Heart,
+    name: "Health App",
+    desc: "Ignored habits & stats.",
+    span: "md:col-span-3",
+    rotate: "-rotate-1",
+  },
 ];
 
 export function Problem() {

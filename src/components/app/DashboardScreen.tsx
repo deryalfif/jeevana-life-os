@@ -15,10 +15,18 @@ type Log = {
 };
 
 const fmtIDR = (n: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
 
 function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 export function DashboardScreen() {
@@ -31,7 +39,9 @@ export function DashboardScreen() {
   const now = new Date();
 
   const today = logs.filter((l) => isSameDay(new Date(l.occurred_at), now));
-  const todayExpense = today.filter((l) => l.type === "expense").reduce((s, l) => s + Number(l.amount ?? 0), 0);
+  const todayExpense = today
+    .filter((l) => l.type === "expense")
+    .reduce((s, l) => s + Number(l.amount ?? 0), 0);
   const todayActivities = today.filter((l) => l.type === "activity").length;
 
   // 7-day expense bars
@@ -42,13 +52,15 @@ export function DashboardScreen() {
     const total = logs
       .filter((l) => l.type === "expense" && isSameDay(new Date(l.occurred_at), d))
       .reduce((s, l) => s + Number(l.amount ?? 0), 0);
-    days.push({ label: ["Min","Sen","Sel","Rab","Kam","Jum","Sab"][d.getDay()], total });
+    days.push({ label: ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"][d.getDay()], total });
   }
   const maxDay = Math.max(1, ...days.map((d) => d.total));
 
   const recentActs = logs.filter((l) => l.type === "activity").slice(0, 4);
   const upcoming = logs
-    .filter((l) => l.type === "reminder" && new Date(l.occurred_at).getTime() >= now.getTime() - 60000)
+    .filter(
+      (l) => l.type === "reminder" && new Date(l.occurred_at).getTime() >= now.getTime() - 60000,
+    )
     .slice(0, 4);
 
   return (
@@ -102,7 +114,9 @@ export function DashboardScreen() {
         <div className="md:col-span-2 bg-white border border-slate-200/70 rounded-3xl p-6">
           <div className="flex items-center gap-2">
             <TrendingUp className="size-4 text-brand" />
-            <div className="text-xs uppercase tracking-wider text-slate-500">Pengeluaran 7 hari</div>
+            <div className="text-xs uppercase tracking-wider text-slate-500">
+              Pengeluaran 7 hari
+            </div>
           </div>
           <div className="mt-5 flex items-end gap-2 h-32">
             {days.map((d, i) => (
@@ -131,7 +145,10 @@ export function DashboardScreen() {
                 <li key={r.id} className="text-sm">
                   <div className="font-medium truncate">{r.title}</div>
                   <div className="text-xs text-slate-500">
-                    {new Date(r.occurred_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}
+                    {new Date(r.occurred_at).toLocaleString("id-ID", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
                   </div>
                 </li>
               ))}
@@ -143,7 +160,9 @@ export function DashboardScreen() {
         <div className="md:col-span-3 bg-white border border-slate-200/70 rounded-3xl p-6">
           <div className="flex items-center gap-2">
             <Activity className="size-4 text-blue-600" />
-            <div className="text-xs uppercase tracking-wider text-slate-500">Aktivitas terakhir</div>
+            <div className="text-xs uppercase tracking-wider text-slate-500">
+              Aktivitas terakhir
+            </div>
           </div>
           {recentActs.length === 0 ? (
             <p className="mt-3 text-sm text-slate-400">Belum ada aktivitas tercatat.</p>

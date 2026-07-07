@@ -1,9 +1,29 @@
 const STEPS = [
-  { t: "Tell Jeevana About Your Day", d: "Speak or type naturally — no forms, no setup.", c: "#3B82F6" },
-  { t: "AI Understands Context", d: "Jeevana parses intent, entities, dates, amounts.", c: "#8B5CF6" },
-  { t: "Data Is Structured Automatically", d: "Categorized and timestamped in the right place.", c: "#3B82F6" },
-  { t: "Dashboard Updates Instantly", d: "Charts and logs reflect your words in realtime.", c: "#8B5CF6" },
-  { t: "Receive Insights And Recommendations", d: "Patterns surface so you can act on them.", c: "#10B981" },
+  {
+    t: "Tell Jeevana About Your Day",
+    d: "Speak or type naturally — no forms, no setup.",
+    c: "#3B82F6",
+  },
+  {
+    t: "AI Understands Context",
+    d: "Jeevana parses intent, entities, dates, amounts.",
+    c: "#8B5CF6",
+  },
+  {
+    t: "Data Is Structured Automatically",
+    d: "Categorized and timestamped in the right place.",
+    c: "#3B82F6",
+  },
+  {
+    t: "Dashboard Updates Instantly",
+    d: "Charts and logs reflect your words in realtime.",
+    c: "#8B5CF6",
+  },
+  {
+    t: "Receive Insights And Recommendations",
+    d: "Patterns surface so you can act on them.",
+    c: "#10B981",
+  },
 ];
 
 export function HowItWorks() {

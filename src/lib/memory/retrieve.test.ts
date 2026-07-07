@@ -13,7 +13,11 @@ const older = new Date(Date.now() - 86400_000).toISOString();
 
 const memories: MemoryStub[] = [
   { id: "1", content: "User suka makan siang di warung padang dekat kantor", created_at: older },
-  { id: "2", content: "Gaji bulanan user sekitar 8 juta, pemasukan freelance tambahan", created_at: now },
+  {
+    id: "2",
+    content: "Gaji bulanan user sekitar 8 juta, pemasukan freelance tambahan",
+    created_at: now,
+  },
   { id: "3", content: "User jogging setiap pagi jam 6 di taman belakang rumah", created_at: older },
   { id: "4", content: "User punya cicilan motor 500 ribu per bulan", created_at: older },
   { id: "5", content: "User senang baca buku fiksi ilmiah sebelum tidur", created_at: now },

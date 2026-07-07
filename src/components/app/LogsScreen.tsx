@@ -24,7 +24,11 @@ const TYPES = [
 ] as const;
 
 const fmtIDR = (n: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
 
 export function LogsScreen() {
   const fetch = useServerFn(fetchLifeLogs);
@@ -87,10 +91,17 @@ export function LogsScreen() {
                   <td className="px-4 py-3 font-medium">{l.title}</td>
                   <td className="px-4 py-3 hidden md:table-cell text-slate-500">{l.category}</td>
                   <td className="px-4 py-3 text-right font-medium">
-                    {l.amount != null ? fmtIDR(Number(l.amount)) : l.duration_minutes ? `${l.duration_minutes} mnt` : "—"}
+                    {l.amount != null
+                      ? fmtIDR(Number(l.amount))
+                      : l.duration_minutes
+                        ? `${l.duration_minutes} mnt`
+                        : "—"}
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-slate-500">
-                    {new Date(l.occurred_at).toLocaleString("id-ID", { dateStyle: "short", timeStyle: "short" })}
+                    {new Date(l.occurred_at).toLocaleString("id-ID", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button

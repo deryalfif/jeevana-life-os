@@ -50,19 +50,19 @@ supabase/
 
 ### Tabel `subscriptions`
 
-| Kolom                | Type        | Deskripsi                            |
-| -------------------- | ----------- | ------------------------------------ |
-| id                   | UUID (PK)   | Primary key                          |
-| user_id              | UUID (FK)   | Referensi ke auth.users              |
-| plan                 | TEXT        | `free`, `pro`, `premium`             |
+| Kolom                | Type        | Deskripsi                                   |
+| -------------------- | ----------- | ------------------------------------------- |
+| id                   | UUID (PK)   | Primary key                                 |
+| user_id              | UUID (FK)   | Referensi ke auth.users                     |
+| plan                 | TEXT        | `free`, `pro`, `premium`                    |
 | status               | TEXT        | `active`, `expired`, `cancelled`, `pending` |
-| mayar_invoice_id     | TEXT        | ID invoice dari Mayar                |
-| mayar_transaction_id | TEXT        | ID transaksi dari Mayar              |
-| payment_url          | TEXT        | URL pembayaran Mayar                 |
-| started_at           | TIMESTAMPTZ | Mulai langganan                      |
-| expires_at           | TIMESTAMPTZ | Berakhir langganan (NULL untuk free) |
-| created_at           | TIMESTAMPTZ | Dibuat                               |
-| updated_at           | TIMESTAMPTZ | Terakhir diupdate                    |
+| mayar_invoice_id     | TEXT        | ID invoice dari Mayar                       |
+| mayar_transaction_id | TEXT        | ID transaksi dari Mayar                     |
+| payment_url          | TEXT        | URL pembayaran Mayar                        |
+| started_at           | TIMESTAMPTZ | Mulai langganan                             |
+| expires_at           | TIMESTAMPTZ | Berakhir langganan (NULL untuk free)        |
+| created_at           | TIMESTAMPTZ | Dibuat                                      |
+| updated_at           | TIMESTAMPTZ | Terakhir diupdate                           |
 
 ## Environment Variables
 
@@ -75,6 +75,7 @@ MAYAR_WEBHOOK_SECRET=<your-webhook-secret>       # Untuk verifikasi webhook
 ```
 
 **Sandbox (untuk testing):**
+
 ```env
 MAYAR_BASE_URL=https://api.mayar.club/hl/v1
 ```
@@ -82,9 +83,11 @@ MAYAR_BASE_URL=https://api.mayar.club/hl/v1
 ## API Endpoints yang Digunakan
 
 ### 1. Create Invoice (`POST /hl/v1/invoice/create`)
+
 Membuat invoice untuk subscription baru. Dipanggil dari server function `createSubscription`.
 
 **Request:**
+
 ```json
 {
   "name": "User Name",
@@ -99,6 +102,7 @@ Membuat invoice untuk subscription baru. Dipanggil dari server function `createS
 ```
 
 **Response:**
+
 ```json
 {
   "statusCode": 200,
@@ -113,9 +117,11 @@ Membuat invoice untuk subscription baru. Dipanggil dari server function `createS
 ```
 
 ### 2. Get Invoice Detail (`GET /hl/v1/invoice/{id}`)
+
 Mengecek status invoice (paid/unpaid). Digunakan untuk manual refresh.
 
 ### 3. Webhook Callback
+
 Mayar mengirim POST request ke `/api/mayar-webhook` ketika status pembayaran berubah.
 
 ## Alur Pembayaran
@@ -136,6 +142,7 @@ Mayar mengirim POST request ke `/api/mayar-webhook` ketika status pembayaran ber
 ### Redirect Flow:
 
 Setelah pembayaran, Mayar redirect user ke:
+
 ```
 https://app.jeevana.app/subscription?status=success
 ```
@@ -144,24 +151,29 @@ Frontend mendeteksi parameter `status=success` dan menampilkan pesan untuk refre
 
 ## Pricing
 
-| Plan    | Harga       | Fitur                                        |
-| ------- | ----------- | -------------------------------------------- |
-| FREE    | Rp 0        | Basic Logging, Expense Tracking, Daily Summary |
+| Plan    | Harga         | Fitur                                                              |
+| ------- | ------------- | ------------------------------------------------------------------ |
+| FREE    | Rp 0          | Basic Logging, Expense Tracking, Daily Summary                     |
 | PRO     | Rp 10.000/bln | Unlimited Logs, Advanced Insights, Smart Reminders, Full Dashboard |
-| PREMIUM | Rp 20.000/bln | Health Tracking, Calendar Integration, AI Planning, Early Access |
+| PREMIUM | Rp 20.000/bln | Health Tracking, Calendar Integration, AI Planning, Early Access   |
 
 ## Server Functions
 
 ### `fetchSubscription` (GET)
+
 Mengambil subscription aktif user. Default ke `free` jika belum ada.
 
 ### `createSubscription` (POST)
+
 Membuat invoice Mayar dan menyimpan subscription pending.
+
 - Input: `{ plan, email, name, mobile? }`
 - Output: `{ ok, message, paymentUrl, invoiceId }`
 
 ### `checkInvoiceStatus` (GET)
+
 Mengecek status invoice dari Mayar dan update DB jika sudah paid.
+
 - Input: `{ invoiceId }`
 - Output: `{ status, amount, paymentUrl }`
 
@@ -194,12 +206,15 @@ Webhook Mayar diverifikasi menggunakan **HMAC SHA-256**:
 ## Testing
 
 ### Sandbox Mode
+
 Gunakan sandbox untuk testing:
+
 - Login: [web.mayar.club](https://web.mayar.club)
 - API Key: [web.mayar.club/api-keys](https://web.mayar.club/api-keys)
 - Base URL: `https://api.mayar.club/hl/v1`
 
 ### Test Flow
+
 1. Jalankan migration di Supabase
 2. Set `MAYAR_BASE_URL=https://api.mayar.club/hl/v1` di `.env`
 3. Buat subscription dari UI
@@ -208,9 +223,9 @@ Gunakan sandbox untuk testing:
 
 ## Troubleshooting
 
-| Masalah | Solusi |
-|---------|--------|
-| Invoice gagal dibuat | Cek `MAYAR_API_KEY` valid dan punya scope `write` |
-| Webhook tidak masuk | Pastikan URL terdaftar di Mayar dan domain bisa diakses |
-| Status tidak update | Cek log server, verifikasi `MAYAR_WEBHOOK_SECRET` benar |
-| "Plan tidak valid" | Pastikan plan hanya `pro` atau `premium` (free tidak butuh payment) |
+| Masalah              | Solusi                                                              |
+| -------------------- | ------------------------------------------------------------------- |
+| Invoice gagal dibuat | Cek `MAYAR_API_KEY` valid dan punya scope `write`                   |
+| Webhook tidak masuk  | Pastikan URL terdaftar di Mayar dan domain bisa diakses             |
+| Status tidak update  | Cek log server, verifikasi `MAYAR_WEBHOOK_SECRET` benar             |
+| "Plan tidak valid"   | Pastikan plan hanya `pro` atau `premium` (free tidak butuh payment) |

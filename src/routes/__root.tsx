@@ -26,7 +26,7 @@ function NotFoundComponent() {
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-Balik ke beranda
+            Balik ke beranda
           </Link>
         </div>
       </div>
@@ -58,13 +58,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-Coba lagi
+            Coba lagi
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-Balik ke beranda
+            Balik ke beranda
           </a>
         </div>
       </div>
@@ -84,7 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Jeevana is an AI Life Operating System. Capture activities, expenses, reminders, and habits through natural conversation.",
       },
       { name: "author", content: "Jeevana" },
-      { property: "og:title", content: "Jeevana — Your Entire Life, Organized In One Conversation" },
+      {
+        property: "og:title",
+        content: "Jeevana — Your Entire Life, Organized In One Conversation",
+      },
       {
         property: "og:description",
         content:
@@ -93,13 +96,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://jeevana.app" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Jeevana — Your Entire Life, Organized In One Conversation" },
+      {
+        name: "twitter:title",
+        content: "Jeevana — Your Entire Life, Organized In One Conversation",
+      },
       {
         name: "twitter:description",
         content:
           "Jeevana is an AI Life Operating System. Capture activities, expenses, reminders, and habits through natural conversation.",
       },
-
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/favicon.png" },

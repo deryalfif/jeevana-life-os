@@ -14,7 +14,11 @@ type Log = {
 };
 
 function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 export function ActivitiesScreen() {
@@ -67,7 +71,9 @@ export function ActivitiesScreen() {
             <Clock className="size-4" />
             <span className="text-xs uppercase tracking-wider text-slate-500">Total durasi</span>
           </div>
-          <div className="text-2xl font-bold mt-2">{Math.round(totalMinutes / 60)}j {totalMinutes % 60}m</div>
+          <div className="text-2xl font-bold mt-2">
+            {Math.round(totalMinutes / 60)}j {totalMinutes % 60}m
+          </div>
           <div className="text-xs text-slate-400">tercatat</div>
         </div>
         <div className="bg-white border border-slate-200/70 rounded-2xl p-5">
@@ -83,15 +89,21 @@ export function ActivitiesScreen() {
       {/* Category breakdown */}
       {categories.length > 0 && (
         <div className="mt-6 bg-white border border-slate-200/70 rounded-3xl p-6">
-          <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-4">Per Kategori</h2>
+          <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-4">
+            Per Kategori
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {categories.map((cat) => {
               const count = activities.filter((a) => a.category === cat).length;
-              const mins = activities.filter((a) => a.category === cat).reduce((s, a) => s + (a.duration_minutes ?? 0), 0);
+              const mins = activities
+                .filter((a) => a.category === cat)
+                .reduce((s, a) => s + (a.duration_minutes ?? 0), 0);
               return (
                 <div key={cat} className="bg-slate-50 rounded-2xl p-4">
                   <div className="text-sm font-medium capitalize">{cat}</div>
-                  <div className="text-xs text-slate-500 mt-1">{count} aktivitas · {mins} mnt</div>
+                  <div className="text-xs text-slate-500 mt-1">
+                    {count} aktivitas · {mins} mnt
+                  </div>
                 </div>
               );
             })}
@@ -107,7 +119,9 @@ export function ActivitiesScreen() {
           <div className="p-10 text-center">
             <div className="text-4xl">🏃</div>
             <p className="mt-3 font-semibold">Belum ada aktivitas</p>
-            <p className="text-sm text-slate-500 mt-1">Ceritakan aktivitasmu di Chat, nanti tercatat otomatis di sini.</p>
+            <p className="text-sm text-slate-500 mt-1">
+              Ceritakan aktivitasmu di Chat, nanti tercatat otomatis di sini.
+            </p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -124,7 +138,10 @@ export function ActivitiesScreen() {
                   </div>
                 </div>
                 <div className="text-xs text-slate-400">
-                  {new Date(a.occurred_at).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                  {new Date(a.occurred_at).toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "short",
+                  })}
                 </div>
               </div>
             ))}

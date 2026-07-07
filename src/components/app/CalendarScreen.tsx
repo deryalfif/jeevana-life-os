@@ -8,7 +8,11 @@ type Log = { id: string; type: string; title: string; occurred_at: string };
 type Reminder = { id: string; title: string; remind_at: string; status: string };
 
 function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 type ViewMode = "month" | "week" | "agenda";
@@ -84,7 +88,9 @@ export function CalendarScreen() {
       <div className="flex items-end justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-3xl font-bold tracking-tight font-display">Kalender</h1>
-          <p className="text-slate-500 mt-1">Lihat aktivitas dan pengingat dalam tampilan kalender.</p>
+          <p className="text-slate-500 mt-1">
+            Lihat aktivitas dan pengingat dalam tampilan kalender.
+          </p>
         </div>
         <div className="flex bg-white border border-slate-200 rounded-xl overflow-hidden">
           {(["month", "week", "agenda"] as ViewMode[]).map((v) => (
@@ -103,19 +109,27 @@ export function CalendarScreen() {
       {view === "month" && (
         <div className="mt-6 bg-white border border-slate-200/70 rounded-3xl overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-slate-100">
-            <button onClick={prevMonth} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+            <button
+              onClick={prevMonth}
+              className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+            >
               <ChevronLeft className="size-4" />
             </button>
             <h2 className="font-display font-semibold">
               {current.toLocaleDateString("id-ID", { month: "long", year: "numeric" })}
             </h2>
-            <button onClick={nextMonth} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+            <button
+              onClick={nextMonth}
+              className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+            >
               <ChevronRight className="size-4" />
             </button>
           </div>
           <div className="grid grid-cols-7 text-center text-xs text-slate-500 font-medium border-b border-slate-100">
             {["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"].map((d) => (
-              <div key={d} className="py-2">{d}</div>
+              <div key={d} className="py-2">
+                {d}
+              </div>
             ))}
           </div>
           <div className="grid grid-cols-7">
@@ -127,23 +141,36 @@ export function CalendarScreen() {
               const ev = eventsForDay(d);
               const isToday = isSameDay(d, today);
               return (
-                <div key={i} className={`min-h-[80px] p-1.5 border-b border-r border-slate-50 ${isToday ? "bg-blue-50/50" : ""}`}>
-                  <div className={`text-xs font-medium mb-1 ${isToday ? "text-white bg-brand size-6 rounded-full grid place-items-center" : "text-slate-600 pl-1"}`}>
+                <div
+                  key={i}
+                  className={`min-h-[80px] p-1.5 border-b border-r border-slate-50 ${isToday ? "bg-blue-50/50" : ""}`}
+                >
+                  <div
+                    className={`text-xs font-medium mb-1 ${isToday ? "text-white bg-brand size-6 rounded-full grid place-items-center" : "text-slate-600 pl-1"}`}
+                  >
                     {i + 1}
                   </div>
                   <div className="space-y-0.5">
                     {ev.logs.slice(0, 2).map((l) => (
-                      <div key={l.id} className={`text-[10px] px-1.5 py-0.5 rounded truncate text-white ${typeColors[l.type] ?? "bg-slate-400"}`}>
+                      <div
+                        key={l.id}
+                        className={`text-[10px] px-1.5 py-0.5 rounded truncate text-white ${typeColors[l.type] ?? "bg-slate-400"}`}
+                      >
                         {l.title}
                       </div>
                     ))}
                     {ev.reminders.slice(0, 1).map((r) => (
-                      <div key={r.id} className="text-[10px] px-1.5 py-0.5 rounded truncate text-white bg-amber-500">
+                      <div
+                        key={r.id}
+                        className="text-[10px] px-1.5 py-0.5 rounded truncate text-white bg-amber-500"
+                      >
                         🔔 {r.title}
                       </div>
                     ))}
-                    {(ev.logs.length + ev.reminders.length > 3) && (
-                      <div className="text-[10px] text-slate-400 pl-1">+{ev.logs.length + ev.reminders.length - 3} lagi</div>
+                    {ev.logs.length + ev.reminders.length > 3 && (
+                      <div className="text-[10px] text-slate-400 pl-1">
+                        +{ev.logs.length + ev.reminders.length - 3} lagi
+                      </div>
                     )}
                   </div>
                 </div>
@@ -157,13 +184,32 @@ export function CalendarScreen() {
       {view === "week" && (
         <div className="mt-6 bg-white border border-slate-200/70 rounded-3xl overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-slate-100">
-            <button onClick={() => { const d = new Date(current); d.setDate(d.getDate() - 7); setCurrent(d); }} className="p-2 hover:bg-slate-100 rounded-xl">
+            <button
+              onClick={() => {
+                const d = new Date(current);
+                d.setDate(d.getDate() - 7);
+                setCurrent(d);
+              }}
+              className="p-2 hover:bg-slate-100 rounded-xl"
+            >
               <ChevronLeft className="size-4" />
             </button>
             <h2 className="font-display font-semibold text-sm">
-              {weekDays[0].toLocaleDateString("id-ID", { day: "numeric", month: "short" })} — {weekDays[6].toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+              {weekDays[0].toLocaleDateString("id-ID", { day: "numeric", month: "short" })} —{" "}
+              {weekDays[6].toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </h2>
-            <button onClick={() => { const d = new Date(current); d.setDate(d.getDate() + 7); setCurrent(d); }} className="p-2 hover:bg-slate-100 rounded-xl">
+            <button
+              onClick={() => {
+                const d = new Date(current);
+                d.setDate(d.getDate() + 7);
+                setCurrent(d);
+              }}
+              className="p-2 hover:bg-slate-100 rounded-xl"
+            >
               <ChevronRight className="size-4" />
             </button>
           </div>
@@ -174,18 +220,38 @@ export function CalendarScreen() {
               return (
                 <div key={d.toISOString()} className={`p-4 ${isToday ? "bg-blue-50/30" : ""}`}>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className={`text-sm font-semibold ${isToday ? "text-brand" : "text-slate-600"}`}>
-                      {d.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" })}
+                    <div
+                      className={`text-sm font-semibold ${isToday ? "text-brand" : "text-slate-600"}`}
+                    >
+                      {d.toLocaleDateString("id-ID", {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                      })}
                     </div>
-                    {isToday && <span className="text-[10px] bg-brand text-white px-2 py-0.5 rounded-full">Hari ini</span>}
+                    {isToday && (
+                      <span className="text-[10px] bg-brand text-white px-2 py-0.5 rounded-full">
+                        Hari ini
+                      </span>
+                    )}
                   </div>
                   {ev.logs.length === 0 && ev.reminders.length === 0 ? (
                     <div className="text-xs text-slate-400">Tidak ada event</div>
                   ) : (
                     <div className="space-y-1">
-                      {[...ev.logs, ...ev.reminders.map((r) => ({ id: r.id, type: "reminder" as const, title: `🔔 ${r.title}`, occurred_at: r.remind_at }))].map((e) => (
+                      {[
+                        ...ev.logs,
+                        ...ev.reminders.map((r) => ({
+                          id: r.id,
+                          type: "reminder" as const,
+                          title: `🔔 ${r.title}`,
+                          occurred_at: r.remind_at,
+                        })),
+                      ].map((e) => (
                         <div key={e.id} className="flex items-center gap-2 text-sm">
-                          <div className={`size-2 rounded-full ${typeColors[e.type] ?? "bg-slate-400"}`} />
+                          <div
+                            className={`size-2 rounded-full ${typeColors[e.type] ?? "bg-slate-400"}`}
+                          />
                           <span>{e.title}</span>
                         </div>
                       ))}
@@ -206,7 +272,9 @@ export function CalendarScreen() {
             <h2 className="font-display font-semibold text-sm">14 Hari ke Depan</h2>
           </div>
           {agendaDays.length === 0 ? (
-            <div className="p-10 text-center text-sm text-slate-400">Tidak ada event dalam 14 hari ke depan</div>
+            <div className="p-10 text-center text-sm text-slate-400">
+              Tidak ada event dalam 14 hari ke depan
+            </div>
           ) : (
             <div className="divide-y divide-slate-100">
               {agendaDays.map((d) => {
@@ -214,12 +282,18 @@ export function CalendarScreen() {
                 return (
                   <div key={d.toISOString()} className="p-4">
                     <div className="text-xs font-semibold text-slate-500 uppercase mb-2">
-                      {d.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" })}
+                      {d.toLocaleDateString("id-ID", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                      })}
                     </div>
                     <div className="space-y-1">
                       {ev.logs.map((l) => (
                         <div key={l.id} className="flex items-center gap-2 text-sm">
-                          <div className={`size-2 rounded-full ${typeColors[l.type] ?? "bg-slate-400"}`} />
+                          <div
+                            className={`size-2 rounded-full ${typeColors[l.type] ?? "bg-slate-400"}`}
+                          />
                           <span>{l.title}</span>
                         </div>
                       ))}

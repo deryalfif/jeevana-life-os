@@ -2,22 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  Crown,
-  Check,
-  Loader2,
-  ExternalLink,
-  RefreshCw,
-  Shield,
-  Zap,
-  Star,
-} from "lucide-react";
+import { Crown, Check, Loader2, ExternalLink, RefreshCw, Shield, Zap, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  fetchSubscription,
-  createSubscription,
-  checkInvoiceStatus,
-} from "@/lib/jeevana.functions";
+import { fetchSubscription, createSubscription, checkInvoiceStatus } from "@/lib/jeevana.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 const PLAN_META = {
@@ -81,9 +68,7 @@ export function SubscriptionScreen() {
           plan,
           email: userData.user.email ?? "",
           name:
-            userData.user.user_metadata?.full_name ??
-            userData.user.email?.split("@")[0] ??
-            "User",
+            userData.user.user_metadata?.full_name ?? userData.user.email?.split("@")[0] ?? "User",
         },
       });
     },
@@ -116,9 +101,7 @@ export function SubscriptionScreen() {
   // Handle redirect dari Mayar checkout
   useEffect(() => {
     if (search?.status === "success") {
-      setPaymentMessage(
-        "Pembayaran sedang diproses. Klik 'Refresh Status' untuk update terbaru.",
-      );
+      setPaymentMessage("Pembayaran sedang diproses. Klik 'Refresh Status' untuk update terbaru.");
       // Clean URL
       navigate({ to: "/subscription", replace: true });
     }
@@ -211,8 +194,7 @@ export function SubscriptionScreen() {
           const plan = PLAN_META[planKey];
           const Icon = plan.icon;
           const isActive = currentPlan === planKey;
-          const isPending =
-            subscription?.status === "pending" && subscription?.plan === planKey;
+          const isPending = subscription?.status === "pending" && subscription?.plan === planKey;
 
           return (
             <div
@@ -273,11 +255,7 @@ export function SubscriptionScreen() {
               </ul>
 
               {planKey === "free" ? (
-                <Button
-                  disabled={isActive}
-                  variant="outline"
-                  className="mt-auto w-full rounded-xl"
-                >
+                <Button disabled={isActive} variant="outline" className="mt-auto w-full rounded-xl">
                   {isActive ? "Plan Aktif" : "Gratis"}
                 </Button>
               ) : (

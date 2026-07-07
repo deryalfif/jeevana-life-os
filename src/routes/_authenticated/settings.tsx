@@ -38,7 +38,11 @@ function SettingsScreen() {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       setEmail(u.user?.email ?? "");
-      const { data: p } = await supabase.from("profiles").select("display_name").eq("id", u.user!.id).single();
+      const { data: p } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", u.user!.id)
+        .single();
       setName(p?.display_name ?? "");
     })();
   }, []);
@@ -90,10 +94,19 @@ function SettingsScreen() {
         </div>
         <div>
           <label className="text-xs font-medium text-slate-600">Nama panggilan</label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" placeholder="Mau dipanggil apa?" />
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="mt-1"
+            placeholder="Mau dipanggil apa?"
+          />
         </div>
         <div className="flex items-center gap-3">
-          <Button onClick={save} disabled={saving} className="bg-ink hover:bg-ink/90 text-white rounded-xl">
+          <Button
+            onClick={save}
+            disabled={saving}
+            className="bg-ink hover:bg-ink/90 text-white rounded-xl"
+          >
             {saving ? "Menyimpan..." : "Simpan"}
           </Button>
           {saved && <span className="text-sm text-emerald-600">Tersimpan ✓</span>}

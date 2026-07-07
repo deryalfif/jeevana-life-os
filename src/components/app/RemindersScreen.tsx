@@ -58,17 +58,28 @@ export function RemindersScreen() {
       {/* Overdue */}
       {overdue.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-xs uppercase tracking-wider text-red-500 font-semibold mb-3">⚠️ Terlewat</h2>
+          <h2 className="text-xs uppercase tracking-wider text-red-500 font-semibold mb-3">
+            ⚠️ Terlewat
+          </h2>
           <div className="space-y-2">
             {overdue.map((r) => (
-              <div key={r.id} className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 flex items-center gap-4">
+              <div
+                key={r.id}
+                className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 flex items-center gap-4"
+              >
                 <div className="size-9 rounded-xl bg-red-100 text-red-500 grid place-items-center">
                   <AlertCircle className="size-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm">{r.title}</div>
                   <div className="text-xs text-red-400 mt-0.5">
-                    {new Date(r.remind_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    {new Date(r.remind_at).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
                 </div>
                 <button
@@ -85,7 +96,9 @@ export function RemindersScreen() {
 
       {/* Upcoming */}
       <div className="mt-6">
-        <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Mendatang</h2>
+        <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">
+          Mendatang
+        </h2>
         <div className="bg-white border border-slate-200/70 rounded-3xl overflow-hidden">
           {isLoading ? (
             <div className="p-10 text-center text-sm text-slate-400">Memuat...</div>
@@ -93,7 +106,9 @@ export function RemindersScreen() {
             <div className="p-10 text-center">
               <div className="text-4xl">🔔</div>
               <p className="mt-3 font-semibold">Tidak ada pengingat mendatang</p>
-              <p className="text-sm text-slate-500 mt-1">Bilang ke AI, "Ingatkan saya bayar listrik tanggal 10".</p>
+              <p className="text-sm text-slate-500 mt-1">
+                Bilang ke AI, "Ingatkan saya bayar listrik tanggal 10".
+              </p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
@@ -105,7 +120,13 @@ export function RemindersScreen() {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm">{r.title}</div>
                     <div className="text-xs text-slate-500 mt-0.5">
-                      {new Date(r.remind_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      {new Date(r.remind_at).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </div>
                   </div>
                   <button
@@ -124,7 +145,9 @@ export function RemindersScreen() {
       {/* Completed */}
       {completed.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Selesai</h2>
+          <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">
+            Selesai
+          </h2>
           <div className="bg-white border border-slate-200/70 rounded-3xl overflow-hidden">
             <div className="divide-y divide-slate-100">
               {completed.slice(0, 20).map((r) => (
@@ -135,7 +158,10 @@ export function RemindersScreen() {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm line-through">{r.title}</div>
                     <div className="text-xs text-slate-400 mt-0.5">
-                      {new Date(r.remind_at).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                      {new Date(r.remind_at).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "short",
+                      })}
                     </div>
                   </div>
                 </div>

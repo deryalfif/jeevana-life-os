@@ -64,9 +64,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition ${
-                  active
-                    ? "bg-ink text-white"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-ink"
+                  active ? "bg-ink text-white" : "text-slate-600 hover:bg-slate-100 hover:text-ink"
                 }`}
               >
                 <Icon className="size-4" />
@@ -90,22 +88,24 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Bottom nav (mobile) */}
         <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 px-2 py-2 z-30 overflow-x-auto">
           <div className="flex min-w-max gap-1">
-            {nav.filter((item) => item.to !== "/admin").map((item) => {
-              const active = pathname.startsWith(item.to);
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`flex flex-col items-center gap-0.5 text-[10px] px-3 py-1 rounded-lg whitespace-nowrap ${
-                    active ? "text-ink bg-slate-100" : "text-slate-400"
-                  }`}
-                >
-                  <Icon className="size-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
+            {nav
+              .filter((item) => item.to !== "/admin")
+              .map((item) => {
+                const active = pathname.startsWith(item.to);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`flex flex-col items-center gap-0.5 text-[10px] px-3 py-1 rounded-lg whitespace-nowrap ${
+                      active ? "text-ink bg-slate-100" : "text-slate-400"
+                    }`}
+                  >
+                    <Icon className="size-5" />
+                    {item.label}
+                  </Link>
+                );
+              })}
           </div>
         </nav>
       </div>

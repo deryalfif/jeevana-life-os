@@ -38,8 +38,8 @@ export function Hero() {
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-ink/60">
-            Activities, expenses, reminders, habits, and goals. Just tell Jeevana what's
-            happening, and AI takes care of the rest.
+            Activities, expenses, reminders, habits, and goals. Just tell Jeevana what's happening,
+            and AI takes care of the rest.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
@@ -102,7 +102,9 @@ function ChatPanel() {
                 { label: "Duration Saved", color: "bg-grape" },
               ].map((r) => (
                 <div key={r.label} className="flex items-center gap-2 text-sm font-semibold">
-                  <span className={`grid size-4 place-items-center rounded-full ${r.color} text-white`}>
+                  <span
+                    className={`grid size-4 place-items-center rounded-full ${r.color} text-white`}
+                  >
                     <Check className="size-2.5" strokeWidth={3} />
                   </span>
                   {r.label}
@@ -195,15 +197,41 @@ function DashboardCard() {
       </div>
 
       {/* Floating Badges */}
-      <FloatingBadge className="-left-2 top-6 sm:-left-6 sm:top-10" dot="bg-emerald-500" label="Activity Saved" />
-      <FloatingBadge className="-right-2 top-32 sm:-right-6 animate-float" dot="bg-brand" label="Expense Recorded" />
-      <FloatingBadge className="-left-2 bottom-24 sm:-left-8 animate-float-delay" dot="bg-grape" label="Reminder Created" />
-      <FloatingBadge className="-right-2 -bottom-3 sm:-right-6" dot="bg-amber-500" label="Daily Summary Ready" />
+      <FloatingBadge
+        className="-left-2 top-6 sm:-left-6 sm:top-10"
+        dot="bg-emerald-500"
+        label="Activity Saved"
+      />
+      <FloatingBadge
+        className="-right-2 top-32 sm:-right-6 animate-float"
+        dot="bg-brand"
+        label="Expense Recorded"
+      />
+      <FloatingBadge
+        className="-left-2 bottom-24 sm:-left-8 animate-float-delay"
+        dot="bg-grape"
+        label="Reminder Created"
+      />
+      <FloatingBadge
+        className="-right-2 -bottom-3 sm:-right-6"
+        dot="bg-amber-500"
+        label="Daily Summary Ready"
+      />
     </div>
   );
 }
 
-function MiniStat({ label, value, sub, color }: { label: string; value: string; sub: string; color: string }) {
+function MiniStat({
+  label,
+  value,
+  sub,
+  color,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  color: string;
+}) {
   return (
     <div className="rounded-xl bg-surface p-3">
       <div className="text-[10px] font-bold uppercase tracking-wider text-ink/40">{label}</div>
@@ -246,7 +274,15 @@ function ActivityRow({
   );
 }
 
-function FloatingBadge({ className = "", dot, label }: { className?: string; dot: string; label: string }) {
+function FloatingBadge({
+  className = "",
+  dot,
+  label,
+}: {
+  className?: string;
+  dot: string;
+  label: string;
+}) {
   return (
     <div
       className={`absolute z-10 hidden items-center gap-2 rounded-full border border-black/5 bg-surface px-3 py-2 text-xs font-bold shadow-xl shadow-black/5 sm:inline-flex ${className}`}

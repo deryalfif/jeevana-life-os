@@ -15,30 +15,31 @@ import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 
-export const Route = createFileRoute("/")(
-  {
-    head: () => ({
-      meta: [
-        { title: "Jeevana — Your Entire Life, Organized In One Conversation" },
-        {
-          name: "description",
-          content:
-            "Jeevana is an AI Life Operating System. Log activities, expenses, reminders, and habits through natural conversation.",
-        },
-        { property: "og:title", content: "Jeevana — AI Life Operating System" },
-        {
-          property: "og:description",
-          content: "Ceritakan harimu, Jeevana akan mengurus sisanya.",
-        },
-      ],
-    }),
-    component: Landing,
-  },
-);
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Jeevana — Your Entire Life, Organized In One Conversation" },
+      {
+        name: "description",
+        content:
+          "Jeevana is an AI Life Operating System. Log activities, expenses, reminders, and habits through natural conversation.",
+      },
+      { property: "og:title", content: "Jeevana — AI Life Operating System" },
+      {
+        property: "og:description",
+        content: "Ceritakan harimu, Jeevana akan mengurus sisanya.",
+      },
+    ],
+  }),
+  component: Landing,
+});
 
 function Landing() {
   return (
-    <div id="main-content" className="min-h-screen bg-canvas font-sans text-ink selection:bg-brand/20">
+    <div
+      id="main-content"
+      className="min-h-screen bg-canvas font-sans text-ink selection:bg-brand/20"
+    >
       <Nav />
       <Hero />
       <Stats />
@@ -57,4 +58,3 @@ function Landing() {
     </div>
   );
 }
-

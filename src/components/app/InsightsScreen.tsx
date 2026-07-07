@@ -1,13 +1,31 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { fetchLifeLogs, fetchHabits, fetchHabitCompletions, fetchReminders, fetchGoals } from "@/lib/jeevana.functions";
+import {
+  fetchLifeLogs,
+  fetchHabits,
+  fetchHabitCompletions,
+  fetchReminders,
+  fetchGoals,
+} from "@/lib/jeevana.functions";
 import { TrendingUp, Brain, Flame, Target, Calendar, Wallet, Activity } from "lucide-react";
 
-type Log = { id: string; type: string; category: string | null; title: string; amount: number | null; duration_minutes: number | null; occurred_at: string };
+type Log = {
+  id: string;
+  type: string;
+  category: string | null;
+  title: string;
+  amount: number | null;
+  duration_minutes: number | null;
+  occurred_at: string;
+};
 
 function formatRp(n: number) {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
 export function InsightsScreen() {
@@ -17,10 +35,19 @@ export function InsightsScreen() {
   const fetchRemindersFn = useServerFn(fetchReminders);
   const fetchGoalsFn = useServerFn(fetchGoals);
 
-  const { data: logs = [] } = useQuery({ queryKey: ["life-logs"], queryFn: () => fetchLogsFn() as unknown as Promise<Log[]> });
+  const { data: logs = [] } = useQuery({
+    queryKey: ["life-logs"],
+    queryFn: () => fetchLogsFn() as unknown as Promise<Log[]>,
+  });
   const { data: habits = [] } = useQuery({ queryKey: ["habits"], queryFn: () => fetchHabitsFn() });
-  const { data: completions = [] } = useQuery({ queryKey: ["habit-completions"], queryFn: () => fetchCompFn() });
-  const { data: reminders = [] } = useQuery({ queryKey: ["reminders"], queryFn: () => fetchRemindersFn() });
+  const { data: completions = [] } = useQuery({
+    queryKey: ["habit-completions"],
+    queryFn: () => fetchCompFn(),
+  });
+  const { data: reminders = [] } = useQuery({
+    queryKey: ["reminders"],
+    queryFn: () => fetchRemindersFn(),
+  });
   const { data: goals = [] } = useQuery({ queryKey: ["goals"], queryFn: () => fetchGoalsFn() });
 
   const now = new Date();
@@ -33,8 +60,18 @@ export function InsightsScreen() {
     const cards: { icon: React.ReactNode; title: string; detail: string; color: string }[] = [];
 
     // Expense trend
-    const thisMonthExpenses = logs.filter((l) => l.type === "expense" && new Date(l.occurred_at).getMonth() === thisMonth && new Date(l.occurred_at).getFullYear() === thisYear);
-    const lastMonthExpenses = logs.filter((l) => l.type === "expense" && new Date(l.occurred_at).getMonth() === lastMonth && new Date(l.occurred_at).getFullYear() === lastMonthYear);
+    const thisMonthExpenses = logs.filter(
+      (l) =>
+        l.type === "expense" &&
+        new Date(l.occurred_at).getMonth() === thisMonth &&
+        new Date(l.occurred_at).getFullYear() === thisYear,
+    );
+    const lastMonthExpenses = logs.filter(
+      (l) =>
+        l.type === "expense" &&
+        new Date(l.occurred_at).getMonth() === lastMonth &&
+        new Date(l.occurred_at).getFullYear() === lastMonthYear,
+    );
     const thisTotal = thisMonthExpenses.reduce((s, l) => s + (l.amount ?? 0), 0);
     const lastTotal = lastMonthExpenses.reduce((s, l) => s + (l.amount ?? 0), 0);
 
@@ -59,7 +96,12 @@ export function InsightsScreen() {
 
     // Top expense category
     const catMap = new Map<string, number>();
-    thisMonthExpenses.forEach((e) => catMap.set(e.category ?? "lainnya", (catMap.get(e.category ?? "lainnya") ?? 0) + (e.amount ?? 0)));
+    thisMonthExpenses.forEach((e) =>
+      catMap.set(
+        e.category ?? "lainnya",
+        (catMap.get(e.category ?? "lainnya") ?? 0) + (e.amount ?? 0),
+      ),
+    );
     const topCat = [...catMap.entries()].sort((a, b) => b[1] - a[1])[0];
     if (topCat) {
       const pct = thisTotal > 0 ? Math.round((topCat[1] / thisTotal) * 100) : 0;
@@ -73,10 +115,12 @@ export function InsightsScreen() {
 
     // Most productive day
     const dayCount = new Map<number, number>();
-    logs.filter((l) => l.type === "activity").forEach((l) => {
-      const day = new Date(l.occurred_at).getDay();
-      dayCount.set(day, (dayCount.get(day) ?? 0) + 1);
-    });
+    logs
+      .filter((l) => l.type === "activity")
+      .forEach((l) => {
+        const day = new Date(l.occurred_at).getDay();
+        dayCount.set(day, (dayCount.get(day) ?? 0) + 1);
+      });
     const topDay = [...dayCount.entries()].sort((a, b) => b[1] - a[1])[0];
     if (topDay) {
       const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -96,7 +140,10 @@ export function InsightsScreen() {
         icon: <Flame className="size-5" />,
         title: `Konsistensi habit: ${rate}%`,
         detail: `Kamu menyelesaikan habit di ${uniqueDays.size} dari 30 hari terakhir.`,
-        color: rate >= 70 ? "from-emerald-50 to-green-50 border-emerald-200" : "from-amber-50 to-orange-50 border-amber-200",
+        color:
+          rate >= 70
+            ? "from-emerald-50 to-green-50 border-emerald-200"
+            : "from-amber-50 to-orange-50 border-amber-200",
       });
     }
 
@@ -112,14 +159,20 @@ export function InsightsScreen() {
     }
 
     // Activity frequency
-    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-    const weekActs = logs.filter((l) => l.type === "activity" && new Date(l.occurred_at) >= weekAgo);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekActs = logs.filter(
+      (l) => l.type === "activity" && new Date(l.occurred_at) >= weekAgo,
+    );
     if (weekActs.length > 0) {
       const totalMins = weekActs.reduce((s, l) => s + (l.duration_minutes ?? 0), 0);
       cards.push({
         icon: <Activity className="size-5" />,
         title: `${weekActs.length} aktivitas minggu ini`,
-        detail: totalMins > 0 ? `Total durasi: ${Math.round(totalMins / 60)} jam ${totalMins % 60} menit.` : "Terus semangat! 💪",
+        detail:
+          totalMins > 0
+            ? `Total durasi: ${Math.round(totalMins / 60)} jam ${totalMins % 60} menit.`
+            : "Terus semangat! 💪",
         color: "from-blue-50 to-sky-50 border-blue-200",
       });
     }
@@ -133,7 +186,10 @@ export function InsightsScreen() {
         icon: <Brain className="size-5" />,
         title: `${rate}% pengingat selesai`,
         detail: `${doneReminders} dari ${totalReminders} pengingat sudah ditandai selesai.`,
-        color: rate >= 80 ? "from-emerald-50 to-green-50 border-emerald-200" : "from-amber-50 to-yellow-50 border-amber-200",
+        color:
+          rate >= 80
+            ? "from-emerald-50 to-green-50 border-emerald-200"
+            : "from-amber-50 to-yellow-50 border-amber-200",
       });
     }
 
@@ -152,11 +208,16 @@ export function InsightsScreen() {
           <div className="col-span-2 bg-white border border-slate-200/70 rounded-3xl p-10 text-center">
             <div className="text-4xl">📊</div>
             <p className="mt-3 font-semibold">Belum cukup data untuk insight</p>
-            <p className="text-sm text-slate-500 mt-1">Mulai catat aktivitas, pengeluaran, dan kebiasaanmu lewat Chat.</p>
+            <p className="text-sm text-slate-500 mt-1">
+              Mulai catat aktivitas, pengeluaran, dan kebiasaanmu lewat Chat.
+            </p>
           </div>
         ) : (
           insights.map((card, i) => (
-            <div key={i} className={`bg-gradient-to-br ${card.color} border rounded-2xl p-6 transition-all hover:shadow-md hover:-translate-y-0.5`}>
+            <div
+              key={i}
+              className={`bg-gradient-to-br ${card.color} border rounded-2xl p-6 transition-all hover:shadow-md hover:-translate-y-0.5`}
+            >
               <div className="text-slate-600 mb-3">{card.icon}</div>
               <h3 className="font-semibold text-lg">{card.title}</h3>
               <p className="text-sm text-slate-600 mt-1">{card.detail}</p>

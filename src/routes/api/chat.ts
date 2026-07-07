@@ -1,11 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  convertToModelMessages,
-  streamText,
-  stepCountIs,
-  tool,
-  type UIMessage,
-} from "ai";
+import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
@@ -18,27 +12,24 @@ function isNewKey(v: string) {
 function makeFetch(key: string): typeof fetch {
   return (input, init) => {
     const headers = new Headers(
-      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
     );
     if (init?.headers) new Headers(init.headers).forEach((v, k) => headers.set(k, v));
-    if (isNewKey(key) && headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization");
+    if (isNewKey(key) && headers.get("Authorization") === `Bearer ${key}`)
+      headers.delete("Authorization");
     headers.set("apikey", key);
     return fetch(input, { ...init, headers });
   };
 }
 
 function getUserClient(token: string) {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
-    {
-      global: {
-        fetch: makeFetch(process.env.SUPABASE_PUBLISHABLE_KEY!),
-        headers: { Authorization: `Bearer ${token}` },
-      },
-      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    }
-  );
+  return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+    global: {
+      fetch: makeFetch(process.env.SUPABASE_PUBLISHABLE_KEY!),
+      headers: { Authorization: `Bearer ${token}` },
+    },
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
 }
 
 async function loadUserMemories(
@@ -83,15 +74,25 @@ async function loadUserPreferences(supabase: ReturnType<typeof getUserClient>, u
     .select("interests, timezone")
     .eq("user_id", userId)
     .single();
-  return { name: profile?.display_name, interests: prefs?.interests, timezone: prefs?.timezone ?? "Asia/Jakarta" };
+  return {
+    name: profile?.display_name,
+    interests: prefs?.interests,
+    timezone: prefs?.timezone ?? "Asia/Jakarta",
+  };
 }
 
-function buildSystemPrompt(memories: string[], prefs: { name?: string | null; interests?: string[] | null; timezone?: string }) {
-  const memoryBlock = memories.length > 0
-    ? `\n\nINGATAN RELEVAN TENTANG USER (dipilih berdasarkan konteks percakapan):\n${memories.map((m, i) => `${i + 1}. ${m}`).join("\n")}`
-    : "";
+function buildSystemPrompt(
+  memories: string[],
+  prefs: { name?: string | null; interests?: string[] | null; timezone?: string },
+) {
+  const memoryBlock =
+    memories.length > 0
+      ? `\n\nINGATAN RELEVAN TENTANG USER (dipilih berdasarkan konteks percakapan):\n${memories.map((m, i) => `${i + 1}. ${m}`).join("\n")}`
+      : "";
   const nameBlock = prefs.name ? `\nNama panggilan user: ${prefs.name}` : "";
-  const interestsBlock = prefs.interests?.length ? `\nUser tertarik pada: ${prefs.interests.join(", ")}` : "";
+  const interestsBlock = prefs.interests?.length
+    ? `\nUser tertarik pada: ${prefs.interests.join(", ")}`
+    : "";
 
   return `Kamu adalah Jeevana, AI Life Operating System pribadi user. Gaya bicara: santai, hangat, Gen-Z Indonesia, singkat, sering pakai emoji yang relevan (tapi jangan berlebihan).
 ${nameBlock}${interestsBlock}${memoryBlock}
@@ -137,10 +138,11 @@ export const Route = createFileRoute("/api/chat")({
 
         // Ambil pesan terbaru dari user untuk semantic memory retrieval
         const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
-        const latestUserText = lastUserMessage?.parts
-          .filter((p) => p.type === "text")
-          .map((p) => ("text" in p ? p.text : ""))
-          .join("") ?? "";
+        const latestUserText =
+          lastUserMessage?.parts
+            .filter((p) => p.type === "text")
+            .map((p) => ("text" in p ? p.text : ""))
+            .join("") ?? "";
 
         // Load user context (memories dipilih secara semantik)
         const [memories, prefs] = await Promise.all([
@@ -158,6 +160,7 @@ export const Route = createFileRoute("/api/chat")({
             .join("");
           const { data: inserted } = await supabase
             .from("messages")
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .insert({ user_id: userId, role: "user", content: text, parts: lastUser.parts as any })
             .select("id")
             .single();
@@ -169,7 +172,9 @@ export const Route = createFileRoute("/api/chat")({
             description: "Catat aktivitas user (olahraga, belajar, kerja, hobi, dll).",
             inputSchema: z.object({
               title: z.string().describe("Judul singkat aktivitas, mis. 'Jogging 5km'"),
-              category: z.string().describe("Kategori: olahraga, belajar, kerja, hobi, sosial, kesehatan, lainnya"),
+              category: z
+                .string()
+                .describe("Kategori: olahraga, belajar, kerja, hobi, sosial, kesehatan, lainnya"),
               duration_minutes: z.number().optional(),
               occurred_at: z.string().describe("ISO timestamp kapan aktivitas terjadi"),
             }),
@@ -195,7 +200,9 @@ export const Route = createFileRoute("/api/chat")({
             description: "Catat pengeluaran user. Amount dalam Rupiah angka penuh.",
             inputSchema: z.object({
               description: z.string(),
-              category: z.string().describe("Kategori: makanan, transportasi, belanja, tagihan, hiburan, lainnya"),
+              category: z
+                .string()
+                .describe("Kategori: makanan, transportasi, belanja, tagihan, hiburan, lainnya"),
               amount: z.number().describe("Jumlah dalam Rupiah, contoh 25000"),
               occurred_at: z.string(),
             }),
@@ -278,10 +285,14 @@ export const Route = createFileRoute("/api/chat")({
             },
           }),
           log_habit: tool({
-            description: "Catat kebiasaan user atau buat habit baru. Jika habit sudah ada, tandai sebagai selesai hari ini.",
+            description:
+              "Catat kebiasaan user atau buat habit baru. Jika habit sudah ada, tandai sebagai selesai hari ini.",
             inputSchema: z.object({
               title: z.string().describe("Nama habit, mis. 'Minum air', 'Olahraga', 'Membaca'"),
-              completed: z.boolean().default(true).describe("Apakah habit sudah dilakukan hari ini"),
+              completed: z
+                .boolean()
+                .default(true)
+                .describe("Apakah habit sudah dilakukan hari ini"),
             }),
             execute: async (args) => {
               // Find or create habit
@@ -335,13 +346,21 @@ export const Route = createFileRoute("/api/chat")({
                 source_message_id: userMessageId,
               });
 
-              return { ok: true, type: "habit", title: habit?.title ?? args.title, completed: args.completed };
+              return {
+                ok: true,
+                type: "habit",
+                title: habit?.title ?? args.title,
+                completed: args.completed,
+              };
             },
           }),
           save_memory: tool({
-            description: "Simpan informasi penting tentang user untuk diingat jangka panjang (pekerjaan, hobi, tujuan hidup, preferensi).",
+            description:
+              "Simpan informasi penting tentang user untuk diingat jangka panjang (pekerjaan, hobi, tujuan hidup, preferensi).",
             inputSchema: z.object({
-              content: z.string().describe("Informasi yang perlu diingat, mis. 'Bekerja sebagai Data Analyst'"),
+              content: z
+                .string()
+                .describe("Informasi yang perlu diingat, mis. 'Bekerja sebagai Data Analyst'"),
             }),
             execute: async (args) => {
               const { data, error } = await supabase
@@ -398,6 +417,7 @@ export const Route = createFileRoute("/api/chat")({
                 user_id: userId,
                 role: "assistant",
                 content: text,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 parts: last.parts as any,
               });
             }

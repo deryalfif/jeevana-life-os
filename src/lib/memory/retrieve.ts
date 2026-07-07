@@ -247,8 +247,7 @@ export function retrieveRelevantMemories(
     .filter((m) => m.score > 0)
     .sort(
       (a, b) =>
-        b.score - a.score ||
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        b.score - a.score || new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     )
     .slice(0, limit);
 }
@@ -259,7 +258,5 @@ export function retrieveRelevantMemories(
 export function formatMemoryContextForPrompt(memories: ScoredMemory[]): string {
   if (memories.length === 0) return "";
 
-  return memories
-    .map((m, i) => `${i + 1}. ${m.content}`)
-    .join("\n");
+  return memories.map((m, i) => `${i + 1}. ${m.content}`).join("\n");
 }

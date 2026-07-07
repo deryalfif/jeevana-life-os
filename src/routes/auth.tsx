@@ -101,14 +101,18 @@ function AuthPage() {
 
         <div className="bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(15,23,42,0.15)] border border-slate-200/70 p-8">
           <h1 className="text-2xl font-bold tracking-tight">
-            {mode === "login" ? "Halo lagi 👋" : mode === "forgot" ? "Lupa Password" : "Mulai cerita kamu"}
+            {mode === "login"
+              ? "Halo lagi 👋"
+              : mode === "forgot"
+                ? "Lupa Password"
+                : "Mulai cerita kamu"}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             {mode === "login"
               ? "Masuk untuk lanjutin ngobrol sama Jeevana."
               : mode === "forgot"
-              ? "Masukkan email kamu untuk mereset password."
-              : "Bikin akun gratis. Cuma email & password."}
+                ? "Masukkan email kamu untuk mereset password."
+                : "Bikin akun gratis. Cuma email & password."}
           </p>
 
           {/* Google OAuth — hanya tampil di mode login & register */}
@@ -154,7 +158,10 @@ function AuthPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className={`${mode !== "forgot" ? "mt-4" : "mt-6"} space-y-3`}>
+          <form
+            onSubmit={handleSubmit}
+            className={`${mode !== "forgot" ? "mt-4" : "mt-6"} space-y-3`}
+          >
             <div>
               <label className="text-xs font-medium text-slate-600">Email</label>
               <Input
@@ -208,10 +215,10 @@ function AuthPage() {
               {loading
                 ? "Sebentar..."
                 : mode === "login"
-                ? "Masuk"
-                : mode === "forgot"
-                ? "Kirim Link Reset"
-                : "Daftar"}
+                  ? "Masuk"
+                  : mode === "forgot"
+                    ? "Kirim Link Reset"
+                    : "Daftar"}
             </Button>
           </form>
 
@@ -221,11 +228,17 @@ function AuthPage() {
             className="mt-4 text-sm text-slate-500 hover:text-ink w-full text-center block"
           >
             {mode === "login" ? (
-              <>Belum punya akun? <span className="text-brand font-medium">Daftar</span></>
+              <>
+                Belum punya akun? <span className="text-brand font-medium">Daftar</span>
+              </>
             ) : mode === "register" ? (
-              <>Udah punya akun? <span className="text-brand font-medium">Masuk</span></>
+              <>
+                Udah punya akun? <span className="text-brand font-medium">Masuk</span>
+              </>
             ) : (
-              <>Kembali ke <span className="text-brand font-medium">Masuk</span></>
+              <>
+                Kembali ke <span className="text-brand font-medium">Masuk</span>
+              </>
             )}
           </button>
 

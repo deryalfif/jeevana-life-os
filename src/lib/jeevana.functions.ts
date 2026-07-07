@@ -25,7 +25,9 @@ export const fetchLifeLogs = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("life_logs")
-      .select("id, type, category, title, amount, duration_minutes, occurred_at, metadata, created_at")
+      .select(
+        "id, type, category, title, amount, duration_minutes, occurred_at, metadata, created_at",
+      )
       .order("occurred_at", { ascending: false })
       .limit(2000);
     if (error) throw new Error(error.message);
@@ -187,7 +189,11 @@ export const archiveMemory = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("memories")
-      .update({ is_archived: data.isArchived, is_pinned: false, updated_at: new Date().toISOString() })
+      .update({
+        is_archived: data.isArchived,
+        is_pinned: false,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -247,7 +253,9 @@ export const fetchGoals = createServerFn({ method: "GET" })
 
 export const createGoal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { title: string; target_value?: number; unit?: string; deadline?: string }) => d)
+  .inputValidator(
+    (d: { title: string; target_value?: number; unit?: string; deadline?: string }) => d,
+  )
   .handler(async ({ data, context }) => {
     const { data: goal, error } = await context.supabase
       .from("goals")
@@ -303,15 +311,15 @@ export const fetchUserPreferences = createServerFn({ method: "GET" })
 
 export const saveUserPreferences = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { interests?: string[]; onboarding_completed?: boolean; timezone?: string }) => d)
+  .inputValidator(
+    (d: { interests?: string[]; onboarding_completed?: boolean; timezone?: string }) => d,
+  )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("user_preferences")
-      .upsert({
-        user_id: context.userId,
-        ...data,
-        updated_at: new Date().toISOString(),
-      });
+    const { error } = await context.supabase.from("user_preferences").upsert({
+      user_id: context.userId,
+      ...data,
+      updated_at: new Date().toISOString(),
+    });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -332,9 +340,15 @@ export const fetchAdminStats = createServerFn({ method: "GET" })
 
     // Use the admin client for cross-user queries
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { count: userCount } = await supabaseAdmin.from("profiles").select("*", { count: "exact", head: true });
-    const { count: logCount } = await supabaseAdmin.from("life_logs").select("*", { count: "exact", head: true });
-    const { count: messageCount } = await supabaseAdmin.from("messages").select("*", { count: "exact", head: true });
+    const { count: userCount } = await supabaseAdmin
+      .from("profiles")
+      .select("*", { count: "exact", head: true });
+    const { count: logCount } = await supabaseAdmin
+      .from("life_logs")
+      .select("*", { count: "exact", head: true });
+    const { count: messageCount } = await supabaseAdmin
+      .from("messages")
+      .select("*", { count: "exact", head: true });
 
     return {
       totalUsers: userCount ?? 0,
@@ -420,13 +434,12 @@ export const createBudget = createServerFn({ method: "POST" })
 
 export const updateBudget = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { id: string; category?: string; amount_limit?: number; period?: string }) => d)
+  .inputValidator(
+    (d: { id: string; category?: string; amount_limit?: number; period?: string }) => d,
+  )
   .handler(async ({ data, context }) => {
     const { id, ...rest } = data;
-    const { error } = await context.supabase
-      .from("finance_budgets")
-      .update(rest)
-      .eq("id", id);
+    const { error } = await context.supabase.from("finance_budgets").update(rest).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -435,10 +448,7 @@ export const deleteBudget = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => d)
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("finance_budgets")
-      .delete()
-      .eq("id", data.id);
+    const { error } = await context.supabase.from("finance_budgets").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
