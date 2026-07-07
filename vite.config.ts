@@ -17,5 +17,10 @@ export default defineConfig({
   ssr: {
     noExternal: bundledServerDeps,
   },
-  plugins: [tanstackStart(), tsConfigPaths(), tailwindcss()],
+  plugins: [
+    // @ts-ignore - preset is valid Nitro runtime config; missing from TS types in current version
+    tanstackStart({ server: { preset: "vercel" } }),
+    tsConfigPaths(),
+    tailwindcss(),
+  ],
 });
