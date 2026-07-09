@@ -128,6 +128,19 @@ export const Route = createFileRoute("/api/chat")({
         if (userErr || !userData.user) return new Response("Unauthorized", { status: 401 });
         const userId = userData.user.id;
 
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const { count } = await supabase
+          .from("messages")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("role", "user")
+          .gte("created_at", todayStart.toISOString());
+        
+        if (count && count >= 50) {
+          return new Response("Batas ngobrol harianmu sudah habis, lanjut besok ya! ✨", { status: 429 });
+        }
+
         const body = (await request.json()) as { messages?: UIMessage[] };
         const messages = body.messages;
         if (!Array.isArray(messages)) return new Response("messages required", { status: 400 });

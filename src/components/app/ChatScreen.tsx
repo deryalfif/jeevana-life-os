@@ -131,6 +131,13 @@ export function ChatScreen() {
     onFinish: () => {
       qc.invalidateQueries({ queryKey: ["life-logs"] });
     },
+    onError: (error) => {
+      if (error.message.includes("429")) {
+        alert("Batas ngobrol harianmu sudah habis, lanjut besok ya! ✨");
+      } else {
+        alert("Terjadi kesalahan: " + error.message);
+      }
+    },
   });
 
   const [input, setInput] = useState("");

@@ -13,7 +13,9 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiMayarWebhookRouteImport } from './routes/api/mayar-webhook'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedSubscriptionRouteImport } from './routes/_authenticated/subscription'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -28,8 +30,6 @@ import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/c
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedActivitiesRouteImport } from './routes/_authenticated/activities'
-import { Route as AuthenticatedSubscriptionRouteImport } from './routes/_authenticated/subscription'
-import { Route as ApiMayarWebhookRouteImport } from './routes/api/mayar-webhook'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -50,11 +50,22 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMayarWebhookRoute = ApiMayarWebhookRouteImport.update({
+  id: '/api/mayar-webhook',
+  path: '/api/mayar-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSubscriptionRoute =
+  AuthenticatedSubscriptionRouteImport.update({
+    id: '/subscription',
+    path: '/subscription',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -124,16 +135,6 @@ const AuthenticatedActivitiesRoute = AuthenticatedActivitiesRouteImport.update({
   id: '/activities',
   path: '/activities',
   getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSubscriptionRoute = AuthenticatedSubscriptionRouteImport.update({
-  id: '/subscription',
-  path: '/subscription',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const ApiMayarWebhookRoute = ApiMayarWebhookRouteImport.update({
-  id: '/api/mayar-webhook',
-  path: '/api/mayar-webhook',
-  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -313,12 +314,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mayar-webhook': {
+      id: '/api/mayar-webhook'
+      path: '/api/mayar-webhook'
+      fullPath: '/api/mayar-webhook'
+      preLoaderRoute: typeof ApiMayarWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/subscription': {
+      id: '/_authenticated/subscription'
+      path: '/subscription'
+      fullPath: '/subscription'
+      preLoaderRoute: typeof AuthenticatedSubscriptionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -417,20 +432,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/activities'
       preLoaderRoute: typeof AuthenticatedActivitiesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/subscription': {
-      id: '/_authenticated/subscription'
-      path: '/subscription'
-      fullPath: '/subscription'
-      preLoaderRoute: typeof AuthenticatedSubscriptionRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/mayar-webhook': {
-      id: '/api/mayar-webhook'
-      path: '/api/mayar-webhook'
-      fullPath: '/api/mayar-webhook'
-      preLoaderRoute: typeof ApiMayarWebhookRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
