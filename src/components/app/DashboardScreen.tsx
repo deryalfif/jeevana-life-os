@@ -3,7 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
 import { fetchLifeLogs } from "@/lib/jeevana.functions";
-import { Activity, Bell, Sparkles, TrendingUp, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Activity,
+  Bell,
+  Sparkles,
+  TrendingUp,
+  MessageCircle,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 type Log = {
   id: string;
@@ -64,26 +72,26 @@ export function DashboardScreen() {
       (l) => l.type === "reminder" && new Date(l.occurred_at).getTime() >= now.getTime() - 60000,
     )
     .slice(0, 4);
-    
+
   const handlePrevDay = () => {
     const prev = new Date(selectedDate);
     prev.setDate(prev.getDate() - 1);
     setSelectedDate(prev);
   };
-  
+
   const handleNextDay = () => {
     const next = new Date(selectedDate);
     next.setDate(next.getDate() + 1);
     setSelectedDate(next);
   };
-  
+
   const handleToday = () => {
     setSelectedDate(new Date());
   };
 
   const isShowingToday = isSameDay(selectedDate, new Date());
-  const displayDate = isShowingToday 
-    ? "Hari ini" 
+  const displayDate = isShowingToday
+    ? "Hari ini"
     : selectedDate.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 
   return (
@@ -91,21 +99,34 @@ export function DashboardScreen() {
       <div className="flex flex-col md:flex-row items-start md:items-end justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-slate-500 mt-1">Ringkasan hidupmu untuk {displayDate.toLowerCase()}.</p>
+          <p className="text-slate-500 mt-1">
+            Ringkasan hidupmu untuk {displayDate.toLowerCase()}.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm mr-2">
-            <button onClick={handlePrevDay} className="p-2 hover:bg-slate-50 transition-colors" aria-label="Hari sebelumnya">
+            <button
+              onClick={handlePrevDay}
+              className="p-2 hover:bg-slate-50 transition-colors"
+              aria-label="Hari sebelumnya"
+            >
               <ChevronLeft className="size-4 text-slate-600" />
             </button>
             <div className="px-3 py-2 text-sm font-medium text-slate-700 min-w-[100px] text-center border-x border-slate-200">
               {displayDate}
             </div>
-            <button onClick={handleNextDay} className="p-2 hover:bg-slate-50 transition-colors" aria-label="Hari selanjutnya">
+            <button
+              onClick={handleNextDay}
+              className="p-2 hover:bg-slate-50 transition-colors"
+              aria-label="Hari selanjutnya"
+            >
               <ChevronRight className="size-4 text-slate-600" />
             </button>
             {!isShowingToday && (
-              <button onClick={handleToday} className="px-3 py-2 text-xs font-medium text-brand border-l border-slate-200 hover:bg-slate-50 transition-colors">
+              <button
+                onClick={handleToday}
+                className="px-3 py-2 text-xs font-medium text-brand border-l border-slate-200 hover:bg-slate-50 transition-colors"
+              >
                 Hari ini
               </button>
             )}
@@ -124,7 +145,9 @@ export function DashboardScreen() {
         <div className="md:col-span-2 bg-gradient-to-br from-ink to-slate-800 text-white rounded-3xl p-6 relative overflow-hidden">
           <div className="absolute -top-10 -right-10 size-40 rounded-full bg-brand/20 blur-3xl" />
           <div className="relative">
-            <div className="text-xs uppercase tracking-wider text-white/60">{isShowingToday ? "Hari ini" : `Tanggal ${selectedDate.getDate()}`}</div>
+            <div className="text-xs uppercase tracking-wider text-white/60">
+              {isShowingToday ? "Hari ini" : `Tanggal ${selectedDate.getDate()}`}
+            </div>
             <div className="text-4xl font-bold mt-2 tracking-tight">{today.length} entri</div>
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div>

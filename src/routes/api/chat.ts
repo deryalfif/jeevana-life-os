@@ -136,9 +136,11 @@ export const Route = createFileRoute("/api/chat")({
           .eq("user_id", userId)
           .eq("role", "user")
           .gte("created_at", todayStart.toISOString());
-        
+
         if (count && count >= 50) {
-          return new Response("Batas ngobrol harianmu sudah habis, lanjut besok ya! ✨", { status: 429 });
+          return new Response("Batas ngobrol harianmu sudah habis, lanjut besok ya! ✨", {
+            status: 429,
+          });
         }
 
         const body = (await request.json()) as { messages?: UIMessage[] };
