@@ -17,5 +17,13 @@ export default defineConfig({
   ssr: {
     noExternal: bundledServerDeps,
   },
-  plugins: [tanstackStart(), tsConfigPaths(), tailwindcss()],
+  plugins: [
+    tanstackStart({
+      nitro: {
+        preset: "vercel",
+      },
+    }),
+    tsConfigPaths(),
+    tailwindcss(),
+  ],
 });
