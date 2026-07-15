@@ -135,49 +135,61 @@ const TSLIB_HELPERS = {
 const TSLIB_IMPORT_RE = /^import\s*\{([^}]+)\}\s*from\s*["']tslib["']\s*;?\s*$/gm;
 
 // ---------------------------------------------------------------------------
+// Regex to match __toESM helper function definition
+// ---------------------------------------------------------------------------
+const TO_ESM_RE = /var\s+__toESM\s*=\s*\(mod,\s*isNodeMode,\s*target\)\s*=>\s*\(\s*target\s*=\s*mod\s*!=\s*null\s*\?\s*__create\s*\(\s*__getProtoOf\s*\(mod\)\s*\)\s*:\s*\{\}\s*,\s*__copyProps\s*\(\s*isNodeMode\s*\|\|\s*!mod\s*\|\|\s*!mod\.__esModule\s*\?\s*__defProp\s*\(\s*target\s*,\s*["']default["']\s*,\s*\{\s*value:\s*mod\s*,\s*enumerable:\s*true\s*\}\s*\)\s*:\s*target\s*,\s*mod\s*\)\s*\);?/g;
+
+// ---------------------------------------------------------------------------
 // Patch a single file
 // ---------------------------------------------------------------------------
 function patchFile(filePath) {
   const source = fs.readFileSync(filePath, "utf8");
 
-  if (!source.includes('"tslib"') && !source.includes("'tslib'")) {
-    return false;
+  let patched = source;
+  let hasChanges = false;
+
+  // 1. Patch tslib imports
+  if (source.includes('"tslib"') || source.includes("'tslib'")) {
+    patched = patched.replace(TSLIB_IMPORT_RE, (_match, importList) => {
+      const helpers = importList
+        .split(",")
+        .map((h) => h.trim())
+        .filter(Boolean);
+
+      const inlined = [];
+      const missing = [];
+
+      for (const helper of helpers) {
+        if (TSLIB_HELPERS[helper]) {
+          inlined.push(TSLIB_HELPERS[helper]);
+        } else {
+          missing.push(helper);
+          console.warn(
+            `[fix-vercel-tslib] WARNING: No inline implementation for tslib helper "${helper}" in ${filePath}`,
+          );
+        }
+      }
+
+      // If there are helpers we don't have inlined, keep a partial import
+      if (missing.length > 0) {
+        const kept = `import { ${missing.join(", ")} } from "tslib";`;
+        return inlined.join("\n") + "\n" + kept;
+      }
+
+      hasChanges = true;
+      return inlined.join("\n");
+    });
   }
 
-  let patched = source;
-  let patchCount = 0;
+  // 2. Patch __toESM helper if present
+  if (patched.includes("__toESM")) {
+    patched = patched.replace(TO_ESM_RE, () => {
+      hasChanges = true;
+      return `var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod), target.default === undefined && (target.default = target), target);`;
+    });
+  }
 
-  patched = patched.replace(TSLIB_IMPORT_RE, (_match, importList) => {
-    const helpers = importList
-      .split(",")
-      .map((h) => h.trim())
-      .filter(Boolean);
-
-    const inlined = [];
-    const missing = [];
-
-    for (const helper of helpers) {
-      if (TSLIB_HELPERS[helper]) {
-        inlined.push(TSLIB_HELPERS[helper]);
-      } else {
-        missing.push(helper);
-        console.warn(
-          `[fix-vercel-tslib] WARNING: No inline implementation for tslib helper "${helper}" in ${filePath}`,
-        );
-      }
-    }
-
-    // If there are helpers we don't have inlined, keep a partial import
-    if (missing.length > 0) {
-      const kept = `import { ${missing.join(", ")} } from "tslib";`;
-      return inlined.join("\n") + "\n" + kept;
-    }
-
-    patchCount++;
-    return inlined.join("\n");
-  });
-
-  if (patchCount === 0 && patched === source) {
+  if (!hasChanges && patched === source) {
     return false;
   }
 
