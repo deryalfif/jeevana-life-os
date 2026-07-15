@@ -137,7 +137,8 @@ const TSLIB_IMPORT_RE = /^import\s*\{([^}]+)\}\s*from\s*["']tslib["']\s*;?\s*$/g
 // ---------------------------------------------------------------------------
 // Regex to match __toESM helper function definition
 // ---------------------------------------------------------------------------
-const TO_ESM_RE = /var\s+__toESM\s*=\s*\(mod,\s*isNodeMode,\s*target\)\s*=>\s*\(\s*target\s*=\s*mod\s*!=\s*null\s*\?\s*__create\s*\(\s*__getProtoOf\s*\(mod\)\s*\)\s*:\s*\{\}\s*,\s*__copyProps\s*\(\s*isNodeMode\s*\|\|\s*!mod\s*\|\|\s*!mod\.__esModule\s*\?\s*__defProp\s*\(\s*target\s*,\s*["']default["']\s*,\s*\{\s*value:\s*mod\s*,\s*enumerable:\s*true\s*\}\s*\)\s*:\s*target\s*,\s*mod\s*\)\s*\);?/g;
+const TO_ESM_RE =
+  /var\s+__toESM\s*=\s*\(mod,\s*isNodeMode,\s*target\)\s*=>\s*\(\s*target\s*=\s*mod\s*!=\s*null\s*\?\s*__create\s*\(\s*__getProtoOf\s*\(mod\)\s*\)\s*:\s*\{\}\s*,\s*__copyProps\s*\(\s*isNodeMode\s*\|\|\s*!mod\s*\|\|\s*!mod\.__esModule\s*\?\s*__defProp\s*\(\s*target\s*,\s*["']default["']\s*,\s*\{\s*value:\s*mod\s*,\s*enumerable:\s*true\s*\}\s*\)\s*:\s*target\s*,\s*mod\s*\)\s*\);?/g;
 
 // ---------------------------------------------------------------------------
 // Patch a single file
