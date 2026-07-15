@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { nitro } from "nitro/vite";
 
 const bundledServerDeps = [
   "tslib",
@@ -18,10 +19,9 @@ export default defineConfig({
     noExternal: bundledServerDeps,
   },
   plugins: [
-    tanstackStart({
-      nitro: {
-        preset: "vercel",
-      },
+    tanstackStart(),
+    nitro({
+      preset: "vercel",
     }),
     tsConfigPaths(),
     tailwindcss(),
